@@ -1,0 +1,82 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:gd="http://gravel.jboss.org/jsf/2.0/data"
+    xmlns:ga="http://gravel.jboss.org/jsf/2.0/action"
+    xmlns:n="http://gravel.jboss.org/jsf/2.0/navigation"
+    xmlns:com="http://quakearts.com/2.0/common"
+    xmlns:ident="http://quakearts.com/identity"
+    xmlns:b="http://quakearts.com/2.0/boot">
+    
+<ui:composition template="../ua/t_base_bare.xhtml">
+	<ui:define name="body">
+	    <ga:responseActions>
+	        <ga:parameter name="id" target="#{userManagement.id}" default="0" required="true" requiredMessage="Please use generated links to access this page">
+	            <f:converter converterId="javax.faces.Long"/>
+	        </ga:parameter>
+	        <com:executeAction listener="#{userManagement.loadUser}"></com:executeAction>
+	    </ga:responseActions> 
+		<h:form>
+			<b:messages showDetail="true" dismissible="true"></b:messages>
+			<b:panel rendered="#{userManagement.user != null}">
+				<f:facet name="header">Edit User</f:facet>
+				<b:inputText label="Username" value="#{userManagement.user.username}" 
+					disabled="#{userManagement.user.username == 'administrator'}" />
+				<b:inputText label="Name" value="#{userManagement.user.name}"/>
+				<ident:password value="#{userManagement.user.password}" validating="true" rendered="#{userManagement.user.username != 'administrator'}" />
+				<b:checkbox value="#{userManagement.user.valid}" label="Active" rendered="#{userManagement.user.username != 'administrator'}"></b:checkbox>
+				<br />
+				<h:commandButton value="Modify User">
+					<f:ajax onevent="#{loader.miniAjaxLoader}" execute="@form" render="@form" />
+			        <com:executeAction listener="#{userManagement.updateUser}"></com:executeAction>
+				</h:commandButton>
+				<h:commandButton value="Delete User" rendered="#{userManagement.user.username != 'administrator'}">
+					<f:ajax onevent="#{loader.miniAjaxLoader}" execute="@form" render="@form" />
+			        <com:executeAction listener="#{userManagement.deleteUser}"></com:executeAction>
+				</h:commandButton>
+				<br />
+				<br />
+				<span class="h5">Roles</span>
+				<b:dataTable value="#{userManagement.user.rolesList}" var="role">
+					<h:column>
+						<h:outputText value="#{role.roleName}"/>
+					</h:column> 
+					<h:column>
+						<h:commandLink value="Delete Role"
+							rendered="#{userManagement.user.username != 'administrator'}">
+							<com:set var="#{roleManagement.userRole}" as="#{role}"></com:set>
+							<com:executeAction listener="#{roleManagement.deleteRole}"></com:executeAction>
+							<f:ajax onevent="#{loader.mainAjaxLoader}" execute="@form" render="@form" />
+						</h:commandLink>
+					</h:column>
+					<h:column>
+						<h:commandLink value="#{role.valid?'Deactivate':'Activate'} Role"
+							rendered="#{userManagement.user.username != 'administrator'}">
+							<com:set var="#{roleManagement.userRole}" as="#{role}"></com:set>
+							<com:set var="#{roleManagement.userRole.valid}" as="#{!roleManagement.userRole.valid}"></com:set>
+							<com:executeAction listener="#{roleManagement.editRole}"></com:executeAction>
+							<f:ajax onevent="#{loader.miniAjaxLoader}" execute="@form" render="@form" />
+						</h:commandLink>
+					</h:column>
+				</b:dataTable>
+				<b:panel rendered="#{userManagement.user.username != 'administrator'}">
+					<b:selectOneInputGroup label="Applications" value="#{systemManagement.application}">
+						<f:ajax render="roles" onevent="#{loader.mainAjaxLoader}"></f:ajax>
+						<f:selectItems value="#{systemManagement.applications}"></f:selectItems>
+					</b:selectOneInputGroup>
+					<b:selectManyListbox value="#{roleManagement.roles}" id="roles">
+						<f:selectItems value="#{systemManagement.roles}"></f:selectItems>
+					</b:selectManyListbox>
+					<b:inputText label="Custom Role" value="#{roleManagement.customroles}"/> 									
+					<h:commandButton value="Add Role">
+						<com:set var="#{roleManagement.user}" as="#{userManagement.user}"></com:set>
+						<com:executeAction listener="#{roleManagement.addRole}"></com:executeAction>
+						<f:ajax onevent="#{loader.miniAjaxLoader}" execute="@form" render="@form"/>
+					</h:commandButton>
+				</b:panel>
+			</b:panel>
+		</h:form>
+	</ui:define>
+</ui:composition>
+</html>

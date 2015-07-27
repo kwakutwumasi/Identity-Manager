@@ -1,0 +1,36 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:gd="http://gravel.jboss.org/jsf/2.0/data"
+    xmlns:ga="http://gravel.jboss.org/jsf/2.0/action"
+    xmlns:n="http://gravel.jboss.org/jsf/2.0/navigation"
+    xmlns:com="http://quakearts.com/2.0/common"
+    xmlns:ident="http://quakearts.com/identity"
+    xmlns:b="http://quakearts.com/2.0/boot">
+<ui:composition template="../ua/t_base_bare.xhtml">
+	<ui:define name="body">
+		<div id="container" />
+		<h:form>
+			<b:panel>
+				<span class="h5">Change your password</span>
+				<div class="input-group">
+					<span class="input-group-addon">
+						User name
+					</span>
+					<span class="form-control">
+						<h:outputText value="#{profile.user.username}" />
+					</span>
+				</div>
+				<b:inputText label="Name" value="#{profile.user.name}"/>
+				<ident:password value="#{profile.user.password}" validating="true"/>
+				<b:button value="Change Password">
+					<f:ajax onevent="#{loader.mainAjaxLoader}"></f:ajax>
+					<com:set as="#{profile.user}" var="#{userManagement.user}"></com:set>
+					<com:executeAction listener="#{userManagement.updateUser}"></com:executeAction>
+				</b:button>
+			</b:panel>
+		</h:form>
+	</ui:define>
+</ui:composition>
+</html>

@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 09-Oct-2011 07:47:03 by Hibernate Tools 3.3.0.GA -->
+<hibernate-mapping>
+    <class name="com.quakearts.identity.hibernate.UserLog" table="user_log" schema="dbo">
+        <id name="id" type="long">
+            <column name="id" />
+            <generator class="identity"></generator>
+        </id>
+        <property name="username" type="string">
+            <column name="username" length="50" not-null="true" />
+        </property>
+        <property name="password" type="string">
+            <column name="password" length="200" not-null="true" />
+        </property>
+        <property name="name" type="string">
+            <column name="name" length="50" />
+        </property>
+        <property name="valid" type="boolean">
+            <column name="valid" not-null="true" />
+        </property>
+        <set name="userRoles" table="user_roles" inverse="true" lazy="false" fetch="select" cascade="all">
+            <key>
+                <column name="id" not-null="true" />
+            </key>
+            <one-to-many class="com.quakearts.identity.hibernate.UserRole" />
+        </set>
+    </class>
+</hibernate-mapping>

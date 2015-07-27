@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-reverse-engineering PUBLIC "-//Hibernate/Hibernate Reverse Engineering DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-reverse-engineering-3.0.dtd" >
+
+<hibernate-reverse-engineering>
+
+	<table-filter match-catalog="ServerDB" match-schema="dbo"
+		match-name="user_log" />
+	<table-filter match-catalog="ServerDB" match-schema="dbo"
+		match-name="user_roles" />
+	<table catalog="ServerDB" schema="dbo" name="user_log"
+		class="com.quakearts.identity.hibernate.UserLog">
+		<primary-key>
+			<generator class="identity"></generator>
+			<key-column name="id" jdbc-type="INTEGER" property="id"
+				type="long" />
+		</primary-key>
+	</table>
+<table catalog="ServerDB" schema="dbo" name="user_roles"
+	class="com.quakearts.identity.hibernate.UserRole">
+	<primary-key>
+		<generator class="identity"></generator>
+		<key-column name="rid" jdbc-type="INTEGER" property="rid" type="long"/>
+	</primary-key>
+</table>
+</hibernate-reverse-engineering>

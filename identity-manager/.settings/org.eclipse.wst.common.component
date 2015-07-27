@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
+    <wb-module deploy-name="identity-manager">
+        <wb-resource deploy-path="/" source-path="/WebContent"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src"/>
+        <dependent-module archiveName="qawebapp-2.2.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/Quakearts Webtools Jboss61/dist/qawebapp-2.2.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="gravel-2.0.2.GA.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/Gravel-2.0.2.GA/gravel-2.0.2.GA.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="qawebapp-ext-2.2.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/Quakearts Webtools Jboss61/dist/qawebapp-ext-2.2.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="qa-bootstrap.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/Quakearts Webtools Jboss61/dist/qa-bootstrap.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="qa-auth-1.1.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/Quakearts Webtools Jboss61/dist/qa-auth-1.1.jar">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <property name="context-root" value="identity-manager"/>
+        <property name="java-output-path" value="/identity-manager/build/classes"/>
+    </wb-module>
+</project-modules>
