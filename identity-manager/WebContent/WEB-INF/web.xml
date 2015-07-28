@@ -64,7 +64,7 @@
 		<auth-method>FORM</auth-method>
 		<form-login-config>
 			<form-login-page>/login.jsf</form-login-page>
-			<form-error-page>/login.jsf?state=error</form-error-page>
+			<form-error-page>/error.jsf</form-error-page>
 		</form-login-config>
 	</login-config>
 	
