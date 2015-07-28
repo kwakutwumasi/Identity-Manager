@@ -97,8 +97,10 @@ public class SystemManagementBean extends BaseBean {
 		
 		if(IdentityConfig.saveIdentityProperties())
 			addMessage("Success", "Application has been added", FacesContext.getCurrentInstance());
-		else
+		else {
+			props.setProperty("identity.applications", applicationsString);
 			addError("Error", "Identity properties could not saved", FacesContext.getCurrentInstance());
+		}
 	}
 
 	public void addRoleForApplication(ActionEvent event){
@@ -116,6 +118,10 @@ public class SystemManagementBean extends BaseBean {
 		String rolesstring = props.getProperty(application);
 		StringBuilder builder= new StringBuilder();
 		if(rolesstring!=null){
+			if(rolesstring.contains(role)){
+				addError("Duplicate role", "The role already exists", FacesContext.getCurrentInstance());
+				return;
+			}
 			builder.append(rolesstring).append(";");
 		}
 		

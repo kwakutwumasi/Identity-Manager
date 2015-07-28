@@ -1,19 +1,16 @@
 package com.quakearts.identity.facelets.util;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URL;
 import java.util.Properties;
 import java.util.logging.Logger;
 
-import javax.faces.context.FacesContext;
-import javax.servlet.ServletContext;
-
-import com.quakearts.identity.facelets.listener.SystemManagementBean;
-
 public class IdentityConfig {
 	private static Properties identityProperties;
-	private static Logger log= Logger.getLogger(SystemManagementBean.class.getName());
+	private static Logger log= Logger.getLogger(IdentityConfig.class.getName());
 	public static final String DEFAULT_ALG="MD5";
 	public static final String DEFAULT_SALT ="Q@(b+Ux3";
 	public static final int DEFAULT_ITERATIONS = 101;
@@ -41,8 +38,8 @@ public class IdentityConfig {
 	public static synchronized boolean saveIdentityProperties(){
 		if(identityProperties!=null){
 			try {
-				ServletContext ctx = (ServletContext) FacesContext.getCurrentInstance().getExternalContext().getContext();
-				OutputStream os = new FileOutputStream(ctx.getRealPath("WEB-INF/classes/identity.properties"));
+				URL url = Thread.currentThread().getContextClassLoader().getResource("identity.properties");
+				OutputStream os = new FileOutputStream(new File(url.toURI()));
 				identityProperties.store(os, "Identity Properties");
 				return true;
 			} catch (Exception e) {

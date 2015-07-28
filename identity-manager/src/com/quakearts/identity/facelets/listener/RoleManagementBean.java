@@ -68,7 +68,7 @@ public class RoleManagementBean extends BaseBean {
 				userrole.setRoleName(role);
 				userrole.setUserLog(user);
 				HibernateHelper.getCurrentSession().save(userrole);
-				addMessage("Role modified", "The roles was succesfully added", ctx);
+				addMessage("Role modified", "The role " + userRole.getRoleName() + " was succesfully added", ctx);
 			}
 		} else {
 			addError("User not found", "The user does not exist", ctx);
