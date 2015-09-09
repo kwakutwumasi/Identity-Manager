@@ -1,10 +1,10 @@
 package com.quakearts.identity.facelets.util;
 
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.util.Properties;
 import java.util.logging.Logger;
 
@@ -39,7 +39,7 @@ public class IdentityConfig {
 		if(identityProperties!=null){
 			try {
 				URL url = Thread.currentThread().getContextClassLoader().getResource("identity.properties");
-				OutputStream os = new FileOutputStream(new File(url.toURI()));
+				OutputStream os = new FileOutputStream(URLDecoder.decode(url.getFile(),"UTF-8"));
 				identityProperties.store(os, "Identity Properties");
 				return true;
 			} catch (Exception e) {
