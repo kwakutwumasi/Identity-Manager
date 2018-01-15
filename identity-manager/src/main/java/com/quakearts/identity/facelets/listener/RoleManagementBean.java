@@ -6,7 +6,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import com.quakearts.identity.hibernate.UserLog;
 import com.quakearts.identity.hibernate.UserRole;
-import com.quakearts.webapp.facelets.tag.BaseBean;
+import com.quakearts.webapp.facelets.base.BaseBean;
 import com.quakearts.webapp.hibernate.HibernateHelper;
 
 @ManagedBean(name = "roleManagement")

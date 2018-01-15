@@ -8,7 +8,7 @@ import org.hibernate.Session;
 import org.hibernate.criterion.Restrictions;
 
 import com.quakearts.identity.hibernate.UserLog;
-import com.quakearts.webapp.facelets.tag.BaseBean;
+import com.quakearts.webapp.facelets.base.BaseBean;
 import com.quakearts.webapp.hibernate.HibernateHelper;
 
 @ManagedBean(name="profile")

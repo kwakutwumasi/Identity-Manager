@@ -8,7 +8,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.faces.model.SelectItem;
 import com.quakearts.identity.facelets.util.IdentityConfig;
-import com.quakearts.webapp.facelets.tag.BaseBean;
+import com.quakearts.webapp.facelets.base.BaseBean;
 
 @ManagedBean(name="systemManagement")
 @ViewScoped
