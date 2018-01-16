@@ -1,15 +1,16 @@
 package com.quakearts.identity.facelets.listener;
 
+import java.util.List;
+
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
-import org.hibernate.Criteria;
-import org.hibernate.Session;
-import org.hibernate.criterion.Restrictions;
 
 import com.quakearts.identity.hibernate.UserLog;
 import com.quakearts.webapp.facelets.base.BaseBean;
-import com.quakearts.webapp.hibernate.HibernateHelper;
+import com.quakearts.webapp.orm.DataStore;
+import com.quakearts.webapp.orm.DataStoreFactory;
+import com.quakearts.webapp.orm.query.helper.ParameterMapBuilder;
 
 @ManagedBean(name="profile")
 @SessionScoped
@@ -24,13 +25,14 @@ public class ProfileBean extends BaseBean {
 	public UserLog getUser() {
 		if(user==null){
 			FacesContext ctx= FacesContext.getCurrentInstance();
-			Session session = HibernateHelper.getCurrentSession();
+			DataStore dataStore = DataStoreFactory.getInstance().getDataStore();
 			
 			String username = ctx.getExternalContext().getRemoteUser();
 			
 			if(username !=null && username.trim().length()>0){
-				Criteria query = session.createCriteria(UserLog.class).add(Restrictions.eq("username", username));
-				user = (UserLog) query.uniqueResult();
+				List<UserLog> users = dataStore.list(UserLog.class, ParameterMapBuilder.createParameters()
+						.add("username", username).build());
+				user = users.isEmpty()?null:users.get(0);
 				if(user !=null){
 					if(!user.isValid()){
 						addError("Profile Inactive", "Your profile is not active.", ctx);

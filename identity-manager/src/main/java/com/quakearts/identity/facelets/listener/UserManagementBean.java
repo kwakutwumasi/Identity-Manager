@@ -1,18 +1,18 @@
 package com.quakearts.identity.facelets.listener;
 
+import java.util.List;
+
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 
-import org.hibernate.NonUniqueObjectException;
-import org.hibernate.Session;
-import org.hibernate.criterion.Restrictions;
-
 import com.quakearts.identity.hibernate.UserLog;
 import com.quakearts.identity.hibernate.UserRole;
 import com.quakearts.webapp.facelets.base.BaseBean;
-import com.quakearts.webapp.hibernate.HibernateHelper;
+import com.quakearts.webapp.orm.DataStore;
+import com.quakearts.webapp.orm.DataStoreFactory;
+import com.quakearts.webapp.orm.query.helper.ParameterMapBuilder;
 
 @ManagedBean(name="userManagement")
 @ViewScoped
@@ -24,11 +24,21 @@ public class UserManagementBean extends BaseBean {
 	private String userroles;
 	private String[] roles;
 	private static final long serialVersionUID = -7063591289223968569L;
-	private long id;
 	private UserLog user = new UserLog();
-	private boolean reload;
 	
 	public UserLog getUser() {
+		if(user == null && hasParameter("id")){
+			try {
+				user = DataStoreFactory.getInstance().getDataStore().get(UserLog.class, getParameterLong("id"));				
+			} catch (NumberFormatException e) {
+				addError("Invalid id", "The id provided is invalid", FacesContext.getCurrentInstance());
+				return null;
+			}
+		
+			if(user == null)
+				addError("User not found", "User cannot be found", FacesContext.getCurrentInstance());
+		}
+		
 		return user;
 	}
 	
@@ -52,50 +62,23 @@ public class UserManagementBean extends BaseBean {
 		this.roles = roles;
 	}
 
-	public long getId() {
-		return id;
-	}
-	
-	public void setId(long id) {
-		if(reload = !(this.id==id))
-			this.id = id;
-	}
-	
-	public void loadUser(ActionEvent e) {
-		if(reload){
-			Session session = HibernateHelper.getCurrentSession();
-			user = (UserLog) session.get(UserLog.class, id);
-		
-			if(user==null)
-				addError("User not found", "User cannot be found", FacesContext.getCurrentInstance());
-		}
-	}
-	
 	public void addUser(ActionEvent event) {
-		if(user==null)
+		if(user == null)
 			return;
 		
 		FacesContext ctx = FacesContext.getCurrentInstance();
-		
-		Session session = HibernateHelper.getCurrentSession();
-		
-		try {
-			UserLog ouser = (UserLog) session.createCriteria(UserLog.class)
-					.add(Restrictions.eq("username", user.getUsername()))
-					.uniqueResult();
-			if(ouser!=null){
-				addError("Duplication error",
-						"Username already exists on the system. " + user.getUsername(),
-						FacesContext.getCurrentInstance());
-				return;
-			}
-		} catch (NonUniqueObjectException e) {
+		DataStore dataStore = DataStoreFactory.getInstance().getDataStore();
+		List<UserLog> ousers = dataStore.list(UserLog.class,ParameterMapBuilder.createParameters()
+				.add("username", user.getUsername()).build());
+
+		if(!ousers.isEmpty()){
 			addError("Duplication error",
-					"More than one user was found in the database with username " + user.getUsername(),
+					"Username already exists on the system. " + user.getUsername(),
 					FacesContext.getCurrentInstance());
+			return;
 		}
 		
-		session.save(user);
+		dataStore.save(user);
 
 		if(userroles!=null && !userroles.trim().isEmpty()){
 			String[] customroles = userroles.split(";");
@@ -104,16 +87,17 @@ public class UserManagementBean extends BaseBean {
 				userrole.setRoleName(role.trim());
 				userrole.setUserLog(user);
 				userrole.setValid(true);
-				session.save(userrole);
+				dataStore.save(userrole);
 			}
 		}
+		
 		if(roles!=null)
 			for(String role : roles){
 				UserRole userrole = new UserRole();
 				userrole.setRoleName(role.trim());
 				userrole.setUserLog(user);
 				userrole.setValid(true);
-				session.save(userrole);
+				dataStore.save(userrole);
 			}
 		
 		addMessage("Success", "User added successfully", ctx);
@@ -128,9 +112,8 @@ public class UserManagementBean extends BaseBean {
 		 }
 			 
 		
-		Session session = HibernateHelper.getCurrentSession();
 		if(user !=null && user.getId()>0){
-			session.delete(user);
+			DataStoreFactory.getInstance().getDataStore().delete(user);
 			setOutcome("success");
 			addMessage("User deleted", "User has been successfully deleted.", FacesContext.getCurrentInstance());
 		} else {
@@ -140,9 +123,8 @@ public class UserManagementBean extends BaseBean {
 	}
 	
 	public void updateUser(ActionEvent event) {
-		Session session = HibernateHelper.getCurrentSession();
 		if(user !=null && user.getId()>0){
-			session.update(user);
+			DataStoreFactory.getInstance().getDataStore().update(user);
 			setOutcome("success");
 			addMessage("User modified", "User has been successfully updated.", FacesContext.getCurrentInstance());
 		} else {

@@ -7,7 +7,7 @@ import javax.faces.event.ActionEvent;
 import com.quakearts.identity.hibernate.UserLog;
 import com.quakearts.identity.hibernate.UserRole;
 import com.quakearts.webapp.facelets.base.BaseBean;
-import com.quakearts.webapp.hibernate.HibernateHelper;
+import com.quakearts.webapp.orm.DataStoreFactory;
 
 @ManagedBean(name = "roleManagement")
 @ViewScoped
@@ -67,7 +67,7 @@ public class RoleManagementBean extends BaseBean {
 				UserRole userrole = new UserRole();
 				userrole.setRoleName(role);
 				userrole.setUserLog(user);
-				HibernateHelper.getCurrentSession().save(userrole);
+				DataStoreFactory.getInstance().getDataStore().save(userrole);
 				addMessage("Role modified", "The role " + userRole.getRoleName() + " was succesfully added", ctx);
 			}
 		} else {
@@ -78,7 +78,7 @@ public class RoleManagementBean extends BaseBean {
 	public void editRole(ActionEvent event) {
 		FacesContext ctx = FacesContext.getCurrentInstance();
 		if (userRole != null && userRole.getRid() > 0) {
-			HibernateHelper.getCurrentSession().update(userRole);
+			DataStoreFactory.getInstance().getDataStore().update(userRole);
 			setOutcome("success");
 			addMessage("Role modified", "The role was succesfully edited", ctx);
 		} else {
@@ -94,7 +94,7 @@ public class RoleManagementBean extends BaseBean {
 	public void deleteRole(ActionEvent event) {
 		FacesContext ctx = FacesContext.getCurrentInstance();
 		if (userRole != null && userRole.getRid() > 0) {
-			HibernateHelper.getCurrentSession().delete(userRole);
+			DataStoreFactory.getInstance().getDataStore().delete(userRole);
 			setOutcome("success");
 			addMessage("Role deleted", "The roles "+userRole.getRoleName()+" was succesfully deleted", ctx);
 			userRole = null;

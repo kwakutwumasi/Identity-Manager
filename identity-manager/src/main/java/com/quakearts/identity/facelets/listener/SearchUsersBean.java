@@ -5,13 +5,10 @@ import java.util.List;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.faces.event.ActionEvent;
-import org.hibernate.Criteria;
-import org.hibernate.Session;
-import org.hibernate.criterion.LogicalExpression;
-import org.hibernate.criterion.Restrictions;
 import com.quakearts.identity.hibernate.UserLog;
 import com.quakearts.webapp.facelets.base.BaseBean;
-import com.quakearts.webapp.hibernate.HibernateHelper;
+import com.quakearts.webapp.orm.DataStoreFactory;
+import com.quakearts.webapp.orm.query.helper.ParameterMapBuilder;
 
 @ManagedBean(name="search")
 @ViewScoped
@@ -26,39 +23,35 @@ public class SearchUsersBean extends BaseBean {
 	private String username;
 	private List<UserLog> users;
 
-	@SuppressWarnings("unchecked")
 	public List<UserLog> getUsers() {
 		if (users == null) {
 
-			Session session = HibernateHelper.getCurrentSession();
-			Criteria query = session.createCriteria(UserLog.class);
-
+			ParameterMapBuilder builder = ParameterMapBuilder.createParameters();
+			
 			if (status != null && !status.trim().isEmpty()) {
 				if (status.equals("valid"))
-					query.add(Restrictions.eq("valid", true));
+					builder.add("valid", true);
 				else if (status.equals("invalid"))
-					query.add(Restrictions.eq("valid", false));
+					builder.add("valid", false);
 			}
 
 			if (username != null && !username.trim().isEmpty())
-				query.add(Restrictions.ilike("username", username));
+				builder.addVariableString("username", username);
 
 			if (roles != null && roles.trim().length() > 0) {
-				Criteria subquery = query.createCriteria("userRoles");
 				String[] rolesArr = roles.split(";");
 				if (rolesArr.length > 1) {
-					LogicalExpression orExpression = Restrictions.or(Restrictions.eq("roleName", rolesArr[0]),
-							Restrictions.eq("roleName", rolesArr[1]));
-					for (int i = 2; i < rolesArr.length; i++) {
-						orExpression = Restrictions.or(orExpression, Restrictions.eq("roleName", rolesArr[i]));
+					builder.disjoin();
+					for (String roleName: rolesArr) {
+						builder.add("userRole.roleName", roleName);
 					}
-					subquery.add(orExpression);
+					builder.endjoin();
 				} else {
-					subquery.add(Restrictions.eq("roleName", roles));
+					builder.add("userRole.roleName", rolesArr[0]);
 				}
 			}
 
-			users = (List<UserLog>) query.list();
+			users = DataStoreFactory.getInstance().getDataStore().list(UserLog.class, builder.build());
 		}
 
 		return users;

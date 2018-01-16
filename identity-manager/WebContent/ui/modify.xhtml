@@ -2,21 +2,12 @@
 	xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:h="http://java.sun.com/jsf/html"
 	xmlns:f="http://java.sun.com/jsf/core"
-    xmlns:gd="http://gravel.jboss.org/jsf/2.0/data"
-    xmlns:ga="http://gravel.jboss.org/jsf/2.0/action"
-    xmlns:n="http://gravel.jboss.org/jsf/2.0/navigation"
     xmlns:com="http://quakearts.com/2.0/common"
     xmlns:ident="http://quakearts.com/identity"
     xmlns:b="http://quakearts.com/2.0/boot">
     
 <ui:composition template="../ua/t_base_bare.xhtml">
 	<ui:define name="body">
-	    <ga:responseActions>
-	        <ga:parameter name="id" target="#{userManagement.id}" default="0" required="true" requiredMessage="Please use generated links to access this page">
-	            <f:converter converterId="javax.faces.Long"/>
-	        </ga:parameter>
-	        <com:executeAction listener="#{userManagement.loadUser}"></com:executeAction>
-	    </ga:responseActions> 
 		<h:form>
 			<b:messages showDetail="true" dismissible="true"></b:messages>
 			<b:panel rendered="#{userManagement.user != null}">

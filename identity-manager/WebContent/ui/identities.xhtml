@@ -2,19 +2,10 @@
 	xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:h="http://java.sun.com/jsf/html"
 	xmlns:f="http://java.sun.com/jsf/core"
-    xmlns:ga="http://gravel.jboss.org/jsf/2.0/action"
-    xmlns:n="http://gravel.jboss.org/jsf/2.0/navigation"
     xmlns:com="http://quakearts.com/2.0/common"
     xmlns:b="http://quakearts.com/2.0/boot">
     
 <ui:composition template="../ua/t_base_bare.xhtml">
-	<ui:define name="header">
-	    <ga:responseActions>
-	        <ga:parameter name="username" target="#{search.username}" />
-	        <ga:parameter name="roles" target="#{search.roles}" />
-	        <ga:parameter name="status" target="#{search.status}" />
-	    </ga:responseActions> 
-	</ui:define>
 	<ui:define name="body">
 		<h:form>
 			<b:panel>

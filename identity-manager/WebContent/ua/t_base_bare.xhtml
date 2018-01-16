@@ -4,10 +4,9 @@
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
-      xmlns:gd="http://gravel.jboss.org/jsf/2.0/data"
-      xmlns:ga="http://gravel.jboss.org/jsf/2.0/action"
       xmlns:b="http://quakearts.com/2.0/boot"
-      xmlns:ut="http://quakearts.com/utils">
+      xmlns:ut="http://quakearts.com/utils"
+      xmlns:c="http://quakearts.com/2.0/common">
 <h:head>
 <title><h:outputText value="Identity Manager V2"/></title>
 <style>
@@ -32,16 +31,16 @@
     		<span class="navbar-brand">Identity Manager V2.0</span> 
     	</f:facet>
     	<b:nav>
-    		<ga:checkRole roles="IdentityAdmin">
+    		<c:checkRole roles="IdentityAdmin">
     			<b:menu value="User Management">
 		    		<h:outputLink value="#{facesContext.externalContext.requestContextPath}/ui/identities.jsf">Search</h:outputLink>
 		    		<h:outputLink value="#{facesContext.externalContext.requestContextPath}/ui/add.jsf">New User</h:outputLink>
     			</b:menu>
     			<h:outputLink value="#{facesContext.externalContext.requestContextPath}/ui/system.management.jsf">System Management</h:outputLink>
-    		</ga:checkRole>
-    		<ga:checkRole roles="IdentityUser">
+    		</c:checkRole>
+    		<c:checkRole roles="IdentityUser">
     			<h:outputLink value="#{facesContext.externalContext.requestContextPath}/us/modify.jsf">Self Service</h:outputLink>
-    		</ga:checkRole>
+    		</c:checkRole>
     	</b:nav>
     </b:navbar>
     <b:container>

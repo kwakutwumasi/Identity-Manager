@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.security.Principal;
 import java.security.acl.Group;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -24,12 +25,12 @@ import javax.transaction.RollbackException;
 import javax.transaction.Status;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
-import org.hibernate.criterion.Restrictions;
 import com.quakearts.identity.facelets.util.IdentityConfig;
 import com.quakearts.identity.hibernate.UserLog;
 import com.quakearts.identity.hibernate.UserRole;
 import com.quakearts.webapp.facelets.util.UtilityMethods;
-import com.quakearts.webapp.hibernate.HibernateHelper;
+import com.quakearts.webapp.orm.DataStoreFactory;
+import com.quakearts.webapp.orm.query.helper.ParameterMapBuilder;
 import com.quakearts.webapp.security.auth.DirectoryRoles;
 import com.quakearts.webapp.security.auth.OtherPrincipal;
 import com.quakearts.webapp.security.auth.UserPrincipal;
@@ -140,10 +141,13 @@ public class IdentityLoginModule implements LoginModule {
 		}
 			
 		try{
-			loginOk = ((user = (UserLog) HibernateHelper.getCurrentSession().createCriteria(UserLog.class)
-					.add(Restrictions.eq("username", username)).add(Restrictions.eq("password", hashPassword))
-					.uniqueResult()) != null);
-		
+			List<UserLog> users = DataStoreFactory.getInstance().getDataStore().list(UserLog.class,
+					ParameterMapBuilder.createParameters().add("username", username)
+					.add("password", hashPassword).build());
+			
+			if((loginOk = !users.isEmpty())){
+				user = users.get(0);
+			}
 		} finally {
 			if(localTran)
 				try {
