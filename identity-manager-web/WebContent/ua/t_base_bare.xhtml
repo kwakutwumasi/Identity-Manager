@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:b="http://quakearts.com/2.0/boot"
+      xmlns:ut="http://quakearts.com/utils"
+      xmlns:c="http://quakearts.com/2.0/common">
+<h:head>
+<title><h:outputText value="Identity Manager V2"/></title>
+</h:head>
+<h:body>
+	<h:form>
+	    <b:navbar responsive="true" position="static-top" type="default" fluid="true">
+		    	<f:facet name="header">
+		    		<span class="navbar-brand">Identity Manager V2.1</span> 
+		    	</f:facet>
+		    	<b:nav>
+		    		<c:secure roles="IdentityAdmin">
+		    			<b:menu value="User Management">
+				    		<h:outputLink value="#{facesContext.externalContext.requestContextPath}/ui/identities.jsf"><b:glyph value="search"></b:glyph>Search</h:outputLink>
+				    		<h:outputLink value="#{facesContext.externalContext.requestContextPath}/ui/add.jsf"><b:glyph value="plus"></b:glyph>New User</h:outputLink>
+		    			</b:menu>
+		    			<h:outputLink value="#{facesContext.externalContext.requestContextPath}/ui/system.management.jsf">System Management</h:outputLink>
+		    		</c:secure>
+		    		<c:secure roles="IdentityUser">
+		    			<h:outputLink value="#{facesContext.externalContext.requestContextPath}/us/modify.jsf">Self Service</h:outputLink>
+			    			<h:commandLink value="Logout">
+					    		<c:logout redirect="#{facesContext.externalContext.requestContextPath}/ua/logout.jsf"></c:logout>
+			    			</h:commandLink>
+		    		</c:secure>
+		    	</b:nav>
+	    </b:navbar>
+    </h:form>
+    <b:container>
+	    <b:row>
+		    	<b:column sm="12">
+				<ui:insert name="body"></ui:insert>
+		    	</b:column>
+	    </b:row>
+	    <b:row>
+	    		<footer>
+				<div style="text-align: center; font-family: Arial; font-size: 10px">
+					(c)Copyright QuakeArts Inc.
+					<h:outputText value="#{ut:now()}">
+						<f:convertDateTime pattern="yyyy"></f:convertDateTime>
+					</h:outputText>
+				</div>
+			</footer>
+	    </b:row>
+	</b:container>
+    <b:ajaxLoader miniloaderimage="../images/mini-loading.gif" 
+    		overlayloaderimage="../images/mini-loading.gif" 
+    		startTimeout="100" endTimeout="500"
+    		mainloaderimage="../images/loading-squares.gif">
+    	</b:ajaxLoader>
+</h:body>
+</html>

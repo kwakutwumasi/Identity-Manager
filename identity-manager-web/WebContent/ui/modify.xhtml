@@ -1,0 +1,122 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:com="http://quakearts.com/2.0/common"
+    xmlns:ident="http://quakearts.com/identity"
+    xmlns:b="http://quakearts.com/2.0/boot">
+<ui:composition template="../ua/t_base_bare.xhtml">
+	<ui:define name="body">
+		<h:form>
+			<b:messages showDetail="true" dismissible="true" id="messages" binding="#{messagesComp}"></b:messages>
+			<b:panel rendered="#{userManagement.user != null}">
+				<f:facet name="header">Edit User</f:facet>
+				<b:formGroup>
+					<b:inputText placeholder="Username" value="#{userManagement.user.username}" 
+						disabled="#{userManagement.user.username eq 'administrator'}">
+						<f:facet name="label">
+							<b:glyph value="user"></b:glyph>
+						</f:facet>						
+					</b:inputText>
+				</b:formGroup>
+				<b:formGroup>
+					<b:inputText placeholder="Name" value="#{userManagement.user.name}">
+						<f:facet name="label">
+							<b:fa style="width:15px" value="id-badge"></b:fa>
+						</f:facet>
+					</b:inputText>
+				</b:formGroup>
+				<b:formGroup>
+					<ident:password value="#{userManagement.user.password}"
+						placeholder="Reset Password"
+						validating="true" rendered="#{userManagement.user.username != 'administrator'}">
+						<f:facet name="label">
+							<b:glyph value="lock"></b:glyph>
+						</f:facet>
+					</ident:password>
+				</b:formGroup>
+				<b:formGroup>
+					<b:checkbox value="#{userManagement.user.valid}" label="Active" rendered="#{!(userManagement.user.username eq 'administrator')}"></b:checkbox>
+				</b:formGroup>
+				<b:formGroup>
+					<b:buttonGroup>
+						<b:button styleClass="btn-md" displayType="success">
+							<b:glyph value="edit"></b:glyph>Modify User
+							<f:ajax onevent="#{loader.miniAjaxLoader}" execute="@form" render="messages" />
+					        <com:executeAction listener="#{userManagement.updateUser}"></com:executeAction>
+						</b:button>
+						<b:button value="" styleClass="btn-md" displayType="danger"
+							rendered="#{!(userManagement.user.username eq 'administrator')}">
+							<b:glyph value="trash"></b:glyph>Delete User
+							<f:ajax onevent="#{loader.miniAjaxLoader}" execute="@form" render="messages" />
+					        <com:executeAction listener="#{userManagement.deleteUser}"></com:executeAction>
+						</b:button>
+					</b:buttonGroup>
+				</b:formGroup>
+				<hr />
+				<span class="h5">Roles</span>
+				<h:panelGroup id="roleTablePanel" layout="block" binding="#{roleTablePanelComp}">
+					<b:dataTable value="#{userManagement.user.rolesList}" var="role">
+						<h:column>
+							<h:outputText value="#{role.roleName}"/>
+						</h:column> 
+						<h:column>
+							<h:commandLink
+								styleClass="btn btn-danger btn-xs #{loader.overlayClass}"
+								rendered="#{!(userManagement.user.username eq 'administrator')}">
+								<b:glyph value="trash"></b:glyph>
+								<com:set var="#{roleManagement.userRole}" as="#{role}"></com:set>
+								<com:executeAction listener="#{roleManagement.deleteRole}"></com:executeAction>
+								<f:ajax onevent="#{loader.overlayAjaxLoader}" execute="@this" render="#{roleTablePanelComp.clientId} #{messagesComp.clientId}" />
+							</h:commandLink>
+							<span style="width:10px; display: inline-block;"></span>
+							<h:commandLink
+								styleClass="btn #{role.valid?'btn-danger':'btn-success'} btn-xs #{loader.overlayClass}"
+								rendered="#{!(userManagement.user.username eq 'administrator')}">
+								<b:glyph value="#{role.valid?'remove':'check'}"></b:glyph>
+								<com:set var="#{roleManagement.userRole}" as="#{role}"></com:set>
+								<com:set var="#{roleManagement.userRole.valid}" as="#{!roleManagement.userRole.valid}"></com:set>
+								<com:executeAction listener="#{roleManagement.editRole}"></com:executeAction>
+								<f:ajax onevent="#{loader.overlayAjaxLoader}" execute="@this" render="@this #{messagesComp.clientId}" />
+							</h:commandLink>
+						</h:column>
+					</b:dataTable>
+				</h:panelGroup>
+				<b:panel rendered="#{!(userManagement.user.username eq 'administrator')}" id="rolesPanel">
+					<b:formGroup>
+						<b:selectOneInputGroup value="#{systemManagement.application}">
+							<f:facet name="label">
+								<b:flaticon value="cube-divisions"></b:flaticon>
+							</f:facet>
+							<f:ajax render="roles" onevent="#{loader.miniAjaxLoader}"></f:ajax>
+							<f:selectItem noSelectionOption="true" itemLabel="Select Application..."></f:selectItem>
+							<f:selectItems value="#{systemManagement.applications}"></f:selectItems>
+						</b:selectOneInputGroup>
+					</b:formGroup>
+					<b:formGroup>
+						<b:selectManyListbox value="#{roleManagement.roles}" id="roles">
+							<f:selectItems value="#{systemManagement.roles}"></f:selectItems>
+						</b:selectManyListbox>
+					</b:formGroup>
+					<b:formGroup>
+						<b:inputText placeholder="Custom roles (separated by ';')" 
+							value="#{roleManagement.customroles}">
+							<f:facet name="label">
+								<b:flaticon value="group-1"></b:flaticon>
+							</f:facet>
+						</b:inputText> 									
+					</b:formGroup>
+					<b:formGroup>
+						<b:button styleClass="btn-md" displayType="success">
+							<b:glyph value="plus"></b:glyph>Add Roles
+							<com:set var="#{roleManagement.user}" as="#{userManagement.user}"></com:set>
+							<com:executeAction listener="#{roleManagement.addRole}"></com:executeAction>
+							<f:ajax onevent="#{loader.miniAjaxLoader}" execute="rolesPanel" render="roleTablePanel messages"/>
+						</b:button>
+					</b:formGroup>
+				</b:panel>
+			</b:panel>
+		</h:form>
+	</ui:define>
+</ui:composition>
+</html>

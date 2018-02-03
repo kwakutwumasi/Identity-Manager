@@ -1,0 +1,89 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:com="http://quakearts.com/2.0/common"
+    xmlns:b="http://quakearts.com/2.0/boot">
+<ui:composition template="../ua/t_base_bare.xhtml">
+	<ui:define name="body">
+		<h:form>
+			<b:panel>
+				<f:facet name="header">Users</f:facet>
+				<span class="h5">Filter results by</span>
+				<b:formGroup>
+					<b:inputText value="#{search.username}" placeholder="Username" id="u">
+						<f:facet name="label">
+							<b:glyph value="user"></b:glyph>
+						</f:facet>
+					</b:inputText>
+				</b:formGroup>
+				<b:formGroup>
+					<b:selectOneInputGroup value="#{search.status}">
+						<f:facet name="label">
+							<b:fa value="check"></b:fa>
+						</f:facet>
+		               	<f:selectItem itemValue="" itemLabel="Select a status ..." />
+		               	<f:selectItem itemValue="valid" itemLabel="Active" />
+		               	<f:selectItem itemValue="invalid" itemLabel="Inactive" />
+		               	<f:selectItem itemValue="both" itemLabel="All" />
+					</b:selectOneInputGroup>
+				</b:formGroup>
+				<b:formGroup>
+				 	<b:inputText value="#{search.roles}" placeholder="Enter role name">
+						<f:facet name="label">
+							<b:flaticon value="group"></b:flaticon>
+						</f:facet>				 		
+				 	</b:inputText>
+			 	</b:formGroup>
+			 	<b:formGroup>
+				 	<b:button>
+				 		<b:glyph value="search"></b:glyph>Search
+				 		<f:ajax render="userTablePanel" execute="@form" onevent="#{loader.mainAjaxLoader}"></f:ajax>
+				 		<com:executeAction listener="#{search.clear}"></com:executeAction>
+				 	</b:button>
+			 	</b:formGroup>
+			 	<hr />
+			 	<h:panelGroup id="userTablePanel" layout="block" binding="#{userTablePanelComp}">
+			 		<b:messages showDetail="true" dismissible="true" id="messages"></b:messages>
+					<b:pagination for="#{table}"></b:pagination>
+					<b:dataTable value="#{search.users}" var="u" idVar="rid" binding="#{table}">
+						<h:column>
+							<f:facet name="header"><h:outputText value="UserName" /></f:facet>
+							<h:outputText value="#{u.username}" />
+						</h:column>
+						<h:column>
+							<f:facet name="header"><h:outputText value="Full Name" /></f:facet>
+							<h:outputText value="#{u.name}"/>
+						</h:column>
+						<h:column>
+							<f:facet name="header"><h:outputText value="Roles" /></f:facet>
+							<ui:repeat value="#{u.rolesList}" var="role"><h:outputText value="#{role.roleName};" rendered="#{role.valid}"/></ui:repeat>
+						</h:column>
+						<h:column>
+							<f:facet name="header"><h:outputText value="Active" /></f:facet>
+							<b:glyph value="check" style="color:green" rendered="#{u.valid}" />
+							<b:glyph value="remove" style="color:red" rendered="#{!u.valid}" />
+						</h:column>
+						<h:column>
+							<h:commandLink rendered="#{!(u.username eq 'administrator')}">
+								<b:glyph value="#{u.valid?'remove':'check'}"></b:glyph>
+								<h:outputText value="#{u.valid?'Deactivate':'Activate'}"></h:outputText>
+								<f:ajax onevent="#{loader.miniAjaxLoader}" render="#{userTablePanelComp.clientId}" execute="@this"></f:ajax>
+								<com:set var="#{userManagement.user}" as="#{u}"></com:set>
+								<com:set var="#{userManagement.user.valid}" as="#{!userManagement.user.valid}" />
+								<com:executeAction listener="#{userManagement.updateUser}"></com:executeAction>
+							</h:commandLink>
+							<span style="width:10px; display: inline-block;"></span>
+							<h:outputLink value="modify.jsf">
+								<b:glyph value="edit"></b:glyph>Modify
+								<f:param name="id" value="#{u.id}"></f:param>
+							</h:outputLink>
+					    </h:column>
+					</b:dataTable>
+				</h:panelGroup>
+			</b:panel>
+		</h:form>
+		<ui:debug></ui:debug>
+	</ui:define>
+</ui:composition>
+</html>

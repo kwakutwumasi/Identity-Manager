@@ -1,3 +1,0 @@
-<Context path="/identity-manager">
-	<Valve className="org.apache.catalina.valves.RemoteHostValve" allow="*.*.*.*"/>
-</Context>
