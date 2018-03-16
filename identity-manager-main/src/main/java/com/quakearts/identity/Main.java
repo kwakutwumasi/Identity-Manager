@@ -1,11 +1,11 @@
 package com.quakearts.identity;
 
-import com.quakearts.appbase.cdi.annotation.TransactionParticipant;
-import com.quakearts.appbase.cdi.annotation.TransactionParticipant.TransactionType;
+import com.quakearts.appbase.cdi.annotation.Transactional;
+import com.quakearts.appbase.cdi.annotation.Transactional.TransactionType;
 
 public class Main {
 	
-	@TransactionParticipant(TransactionType.SINGLETON)
+	@Transactional(TransactionType.SINGLETON)
 	public void init() {
 		new IdentityManagerBootstrap().boostrapIdentityModule();
 	}	

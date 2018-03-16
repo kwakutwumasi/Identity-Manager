@@ -11,6 +11,8 @@
 				<version>3.0.0</version>
 				<configuration>
 					<warSourceDirectory>WebContent</warSourceDirectory>
+					<attachClasses>true</attachClasses>
+					<classesClassifier>external</classesClassifier>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -27,7 +29,7 @@
 							<target name="Copy wars">
 								<echo>Copying WAR to application base</echo>
 								<copy todir="../identity-manager-main/webservers/default/webapps/identity-manager-web">
-									<fileset dir="target/identity-manager-web-${project.version}" />
+									<fileset dir="WebContent" />
 								</copy>
 							</target>
 						</configuration>

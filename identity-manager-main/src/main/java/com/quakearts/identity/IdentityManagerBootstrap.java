@@ -4,8 +4,6 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Random;
 
-import javax.faces.event.AbortProcessingException;
-
 import com.quakearts.identity.model.UserLog;
 import com.quakearts.identity.model.UserRole;
 import com.quakearts.identity.util.IdentityConfig;
@@ -24,7 +22,7 @@ public class IdentityManagerBootstrap {
 			
 			Properties props = IdentityConfig.getIdentityProperties();
 			if(props==null)
-				throw new AbortProcessingException("Could not load properties");
+				throw new RuntimeException("Could not load identity manager properties: identity.properties");
 			
 			
 			String newPassword = generateRandomPassword();

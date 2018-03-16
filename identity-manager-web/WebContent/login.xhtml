@@ -16,14 +16,20 @@
 				<f:facet name="header">Login</f:facet>
 				<form action="j_security_check" method="post">
 					<b:formGroup>
-					    	<b:inputText id="j_username" placeholder="Username" autocomplete="off">
-					    		<f:facet name="label"><b:fa value="sign-in" /></f:facet>
-					    	</b:inputText>
+						<div class="input-group">
+							<span class="input-group-addon">
+								<b:fa value="sign-in" />
+							</span>
+						    	<input class="form-control" id="j_username" name="j_username" placeholder="Username" autocomplete="off" />
+						</div>
 				    	</b:formGroup>
 					<b:formGroup>
-					    	<b:inputText type="password" placeholder="Password" id="j_password" autocomplete="off">
-					    		<f:facet name="label"><b:fa value="lock" /></f:facet>			    	
-					    	</b:inputText>
+						<div class="input-group">
+							<span class="input-group-addon">
+								<b:fa value="lock" />
+							</span>
+						    	<input class="form-control" type="password" placeholder="Password" id="j_password" name="j_password" autocomplete="off" />
+						</div>
 				    	</b:formGroup>
 					<b:formGroup>
 						<button type="submit" class="btn btn-success btn-sm">
