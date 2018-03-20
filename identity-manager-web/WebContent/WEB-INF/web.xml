@@ -57,6 +57,6 @@
 		</form-login-config>
 	</login-config>
 	<welcome-file-list>
-		<welcome-file>/ui/identities.jsf</welcome-file>
+		<welcome-file>ui/identities.jsf</welcome-file>
 	</welcome-file-list>
 </web-app>
