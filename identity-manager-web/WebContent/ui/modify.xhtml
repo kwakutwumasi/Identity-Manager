@@ -56,10 +56,20 @@
 				<hr />
 				<span class="h5">Roles</span>
 				<h:panelGroup id="roleTablePanel" layout="block" binding="#{roleTablePanelComp}">
-					<b:dataTable value="#{userManagement.user.rolesList}" var="role">
+					<b:formGroup>
+						<h:commandLink
+							styleClass="btn btn-danger btn-xs #{loader.overlayClass}"
+							rendered="#{!(userManagement.user.username eq 'administrator')}">
+							<b:glyph value="trash"></b:glyph>Clear All Roles
+							<com:executeAction listener="#{userManagement.clearAllRoles}"></com:executeAction>
+							<f:ajax onevent="#{loader.overlayAjaxLoader}" execute="@this" render="#{roleTablePanelComp.clientId} #{messagesComp.clientId}" />
+						</h:commandLink>
+					</b:formGroup>
+					<b:pagination for="#{rolesTable}" pageSize="10"></b:pagination>
+					<b:dataTable value="#{userManagement.user.rolesList}" binding="#{rolesTable}" var="role">
 						<h:column>
 							<h:outputText value="#{role.roleName}"/>
-						</h:column> 
+						</h:column>
 						<h:column>
 							<h:commandLink
 								styleClass="btn btn-danger btn-xs #{loader.overlayClass}"
@@ -94,7 +104,7 @@
 						</b:selectOneInputGroup>
 					</b:formGroup>
 					<b:formGroup>
-						<b:selectManyListbox value="#{roleManagement.roles}" id="roles">
+						<b:selectManyListbox limit="true" size="10" value="#{roleManagement.roles}" id="roles">
 							<f:selectItems value="#{systemManagement.roles}"></f:selectItems>
 						</b:selectManyListbox>
 					</b:formGroup>

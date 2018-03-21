@@ -3,6 +3,7 @@ package com.quakearts.identity.facelets.listener;
 import java.util.List;
 
 import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ManagedProperty;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
@@ -25,6 +26,13 @@ public class UserManagementBean extends BaseBean {
 	private String[] roles;
 	private static final long serialVersionUID = -7063591289223968569L;
 	private UserLog user;
+	
+	@ManagedProperty("#{systemManagement}")
+	private SystemManagementBean systemManagementBean;
+
+	public void setSystemManagementBean(SystemManagementBean systemManagementBean) {
+		this.systemManagementBean = systemManagementBean;
+	}
 	
 	public UserLog getUser() {
 		if(user == null) {
@@ -66,6 +74,32 @@ public class UserManagementBean extends BaseBean {
 		this.roles = roles;
 	}
 
+	public void addAllRoles(ActionEvent event) {
+		FacesContext ctx = FacesContext.getCurrentInstance();
+		String[] applicationRoles;
+		if(systemManagementBean!=null 
+				&& (applicationRoles = systemManagementBean.getRoles()).length>0) {
+			this.roles = applicationRoles;
+			addMessage("Roles added", "All roles have been added", ctx);
+		} else {
+			addError("Invalid Selection", "No roles were added", ctx);
+		}
+	}
+	
+	public void clearAllRoles(ActionEvent event) {
+		FacesContext ctx = FacesContext.getCurrentInstance();
+		if (user != null && user.getId() > 0) {
+			DataStore dataStore = DataStoreFactory.getInstance().getDataStore();
+			for(UserRole userRole:user.getRolesList()) {
+				dataStore.delete(userRole);
+			}
+			user.getRolesList().clear();
+			addMessage("Roles Cleared", "All roles have been cleared", ctx);
+		} else {
+			addError("User not found", "The user does not exist", ctx);
+		}
+	}
+	
 	public void addUser(ActionEvent event) {
 		if(user == null) {
 			addError("Invalid Entry",

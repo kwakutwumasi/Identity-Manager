@@ -40,9 +40,16 @@
 				<h:panelGroup layout="block" id="rolesPanel" binding="#{rolesBindingPanel}">
 					<b:formGroup rendered="#{! empty systemManagement.application}">
 						<label>Roles</label>
-						<b:selectManyListbox value="#{userManagement.roles}">
+						<b:selectManyListbox limit="true" size="10" value="#{userManagement.roles}">
 							<f:selectItems value="#{systemManagement.roles}"></f:selectItems>
 						</b:selectManyListbox>
+					</b:formGroup>
+					<b:formGroup rendered="#{! empty systemManagement.application}">
+						<b:button>
+							<b:fa value="angle-double-down"></b:fa> Add all
+							<com:executeAction listener="#{userManagement.addAllRoles}"></com:executeAction>
+							<f:ajax execute="@this" render="rolesPanel" onevent="#{loader.overlayAjaxLoader}"></f:ajax>
+						</b:button>
 					</b:formGroup>
 				</h:panelGroup>
 				<b:formGroup>

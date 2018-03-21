@@ -57,7 +57,9 @@
 						</h:column>
 						<h:column>
 							<f:facet name="header"><h:outputText value="Roles" /></f:facet>
-							<ui:repeat value="#{u.rolesList}" var="role"><h:outputText value="#{role.roleName};" rendered="#{role.valid}"/></ui:repeat>
+							<textarea rows="5" class="form-control" readonly="readonly">
+								<ui:repeat value="#{u.rolesList}" var="role"><h:outputText value="#{role.roleName};" rendered="#{role.valid}"/></ui:repeat>
+							</textarea>
 						</h:column>
 						<h:column>
 							<f:facet name="header"><h:outputText value="Active" /></f:facet>
