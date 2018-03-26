@@ -48,7 +48,7 @@
 						<b:button>
 							<b:fa value="angle-double-down"></b:fa> Add all
 							<com:executeAction listener="#{userManagement.addAllRoles}"></com:executeAction>
-							<f:ajax execute="@this" render="rolesPanel" onevent="#{loader.overlayAjaxLoader}"></f:ajax>
+							<f:ajax execute="@this" render="rolesPanel"></f:ajax>
 						</b:button>
 					</b:formGroup>
 				</h:panelGroup>
