@@ -173,6 +173,7 @@ public class IdentityLoginModule implements LoginModule {
 		}
 
 		rolesgrp.addMember(new OtherPrincipal(IDENTITY_USER));
+		rolesgrp.addMember(new UserPrincipal(user.getUsername()));
 		
 		for(UserRole role:user.getUserRoles()){
 			OtherPrincipal principal = new OtherPrincipal(role.getRoleName(),
