@@ -49,19 +49,7 @@
 		<dependency>
 			<groupId>com.quakearts.webtools</groupId>
 			<artifactId>qa-appbase</artifactId>
-			<version>1.1</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.derby</groupId>
-			<artifactId>derby</artifactId>
-			<version>10.13.1.1</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-jdk14</artifactId>
-			<version>1.7.25</version>
+			<version>2.1.1</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -70,29 +58,11 @@
 			<version>4.12</version>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>com.quakearts.webtools</groupId>
-			<artifactId>qa-boot</artifactId>
-			<version>2.2</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.quakearts.webtools</groupId>
-			<artifactId>qa-orm-hibernate-web</artifactId>
-			<version>1.0.0</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.sun.faces</groupId>
-			<artifactId>jsf-api</artifactId>
-			<version>2.2.14</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.sun.faces</groupId>
-			<artifactId>jsf-impl</artifactId>
-			<version>2.2.14</version>
-			<scope>test</scope>
-		</dependency>
 	</dependencies>
+	<repositories>
+	    <repository>
+	        <id>quakearts-mvn-repo</id>
+	        <url>https://raw.github.com/kwakutwumasi/Quakearts-Webtools/mvn-repo/</url>
+	    </repository>
+	</repositories>
 </project>

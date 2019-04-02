@@ -2,7 +2,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>identity-manager-web</artifactId>
-	<packaging>war</packaging>
+	<packaging>jar</packaging>
 	<name>Identity Manager Web</name>
 	<build>
 		<plugins>
@@ -11,8 +11,7 @@
 				<version>3.0.0</version>
 				<configuration>
 					<warSourceDirectory>WebContent</warSourceDirectory>
-					<attachClasses>true</attachClasses>
-					<classesClassifier>external</classesClassifier>
+					<attachClasses>false</attachClasses>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -26,11 +25,20 @@
 							<goal>run</goal>
 						</goals>
 						<configuration>
-							<target name="Copy wars">
-								<echo>Copying WAR to application base</echo>
-								<copy todir="../identity-manager-main/webservers/default/webapps/identity-manager-web">
+							<target name="Process WebContent">
+								<echo>Processing WebContent</echo>
+								<copy todir="../identity-manager-base/webservers/default/webapps/webapp">
 									<fileset dir="WebContent" />
 								</copy>
+								<copy file="test-config/webapp.config.json" 
+									todir="../identity-manager-base/webservers/default/webapps/webapp/META-INF"
+									overwrite="true" />
+								<copy file="test-config/context.xml" 
+									todir="../identity-manager-base/webservers/default/webapps/webapp/META-INF"
+									overwrite="true" />
+								<zip destfile="${project.build.directory}/identity-manager-web.war">
+								  <zipfileset dir="WebContent" />
+								</zip>
 							</target>
 						</configuration>
 					</execution>
@@ -42,12 +50,12 @@
 		<dependency>
 			<groupId>com.quakearts.webtools</groupId>
 			<artifactId>qa-boot</artifactId>
-			<version>2.2</version>
+			<version>2.2.1</version>
 		</dependency>
 		<dependency>
 			<groupId>com.quakearts.webtools</groupId>
 			<artifactId>qa-orm-hibernate-web</artifactId>
-			<version>1.0.0</version>
+			<version>1.0.1</version>
 		</dependency>
 		<dependency>
 			<groupId>com.sun.faces</groupId>
@@ -63,7 +71,6 @@
 			<groupId>com.quakearts.identity</groupId>
 			<artifactId>identity-manager-main</artifactId>
 			<version>2.1.0</version>
-			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 	<parent>
@@ -72,4 +79,10 @@
 		<version>2.1.0</version>
 		<relativePath>../identity-manager</relativePath>
 	</parent>
+	<repositories>
+	    <repository>
+	        <id>quakearts-mvn-repo</id>
+	        <url>https://raw.github.com/kwakutwumasi/Quakearts-Webtools/mvn-repo/</url>
+	    </repository>
+	</repositories>
 </project>
