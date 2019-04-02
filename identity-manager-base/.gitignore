@@ -1,0 +1,6 @@
+/target/
+/identityDB/
+/derby.log
+/tmlog.lck
+/tmlog*.log
+/webservers/

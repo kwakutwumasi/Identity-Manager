@@ -5,7 +5,7 @@
     xmlns:com="http://quakearts.com/2.0/common"
     xmlns:ident="http://quakearts.com/identity"
     xmlns:b="http://quakearts.com/2.0/boot">
-<ui:composition template="../ua/t_base_bare.xhtml">
+<ui:composition template="../ua/template.xhtml">
 	<ui:define name="body">
 		<h:form>
    		<b:messages showDetail="true" dismissible="true" id="messages"></b:messages>
@@ -46,7 +46,7 @@
 					</b:formGroup>
 					<b:formGroup rendered="#{! empty systemManagement.application}">
 						<b:button>
-							<b:fa value="angle-double-down"></b:fa> Add all
+							<b:fa value="angle-double-down"></b:fa> Add All
 							<com:executeAction listener="#{userManagement.addAllRoles}"></com:executeAction>
 							<f:ajax execute="@this" render="rolesPanel"></f:ajax>
 						</b:button>

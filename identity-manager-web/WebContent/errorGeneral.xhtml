@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	  xmlns:ui="http://java.sun.com/jsf/facelets"
+	  xmlns:b="http://quakearts.com/2.0/boot"
+	  xmlns:f="http://java.sun.com/jsf/core">
+<ui:composition template="ua/template.xhtml">
+<ui:define name="content">
+	<b:column sm="12" md="4" offsetmd="4">
+		<b:panel type="warning">
+			<f:facet name="header">
+				General System Error
+			</f:facet>
+			You cannot process your request at this time. Please speak to your system administrator for assistance.
+		</b:panel>
+	</b:column>
+	<script>
+		window.setTimeout("history.back()",3000);
+	</script>
+</ui:define>
+</ui:composition>
+</html>

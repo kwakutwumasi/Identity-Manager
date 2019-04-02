@@ -6,7 +6,7 @@
 	xmlns:f="http://java.sun.com/jsf/core"
 	xmlns:b="http://quakearts.com/2.0/boot">
 
-<ui:composition template="/ua/t_base_bare.xhtml">
+<ui:composition template="/ua/template.xhtml">
 	<ui:define name="body">
 		<h:panelGroup layout="block" class="alert alert-warn" role="alert"
 			rendered="#{param.status eq 'error'}">
@@ -15,7 +15,7 @@
 		<b:column sm="12" md="6">
 			<form action="j_security_check" method="get">
 			    <b:panel>
-			    	Either the username or password is incorrect. Please click <h:outputLink value="#{facesContext.externalContext.requestContextPath}">here</h:outputLink> to try again.
+			    	Either the username or password is incorrect. Please click <h:outputLink value="#{facesContext.externalContext.requestContextPath}/index">here</h:outputLink> to try again.
 			    </b:panel>
 		    </form>
 	    </b:column>

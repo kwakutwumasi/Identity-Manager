@@ -4,7 +4,9 @@
 				"qa-common-2.3.2.jar",
 				"qa-orm-hibernate-web-1.0.1.jar",
 				"jsf-api-2.2.14.jar",
-				"jsf-impl-2.2.14.jar",
-				"identity-manager-web-2.1.0-external.jar"]
+				"jsf-impl-2.2.14.jar"]
+	},
+	"webapp.directories":{
+		"set":["etc","../identity-manager-web/target/classes"]
 	}
 }

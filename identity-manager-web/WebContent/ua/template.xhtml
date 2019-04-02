@@ -50,9 +50,20 @@
 	    </b:row>
 	</b:container>
     <b:ajaxLoader miniloaderimage="../images/mini-loading.gif" 
-    		overlayloaderimage="../images/mini-loading.gif" 
-    		startTimeout="100" endTimeout="500"
-    		mainloaderimage="../images/loading-squares.gif">
-    	</b:ajaxLoader>
+   		overlayloaderimage="../images/mini-loading.gif" 
+   		startTimeout="100" endTimeout="500"
+   		mainloaderimage="../images/loading-squares.gif">
+   	</b:ajaxLoader>
+	<b:script>
+var probeId = window.setInterval(function(){
+	$.get("/probe")
+	.done(function(data){
+		if(data!='OK')
+			location.assign('#{facesContext.externalContext.requestContextPath}/index');
+	}).fail(function(){
+		window.clearInterval(probeId);
+	})
+},330000);	
+	</b:script>
 </h:body>
 </html>

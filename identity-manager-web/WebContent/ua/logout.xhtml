@@ -5,11 +5,11 @@
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:b="http://quakearts.com/2.0/boot">
-<ui:composition template="t_base_bare.xhtml">
+<ui:composition template="template.xhtml">
 <ui:define name="body">
 	<b:panel popup="true">
 		<f:facet name="header">You have been logged out</f:facet>
-		Click <h:outputLink value="#{facesContext.externalContext.requestContextPath}" styleClass="btn btn-success btn-xs"><b:fa value="home"></b:fa></h:outputLink> 
+		Click <h:outputLink value="#{facesContext.externalContext.requestContextPath}/index" styleClass="btn btn-success btn-xs"><b:fa value="home"></b:fa></h:outputLink> 
 		to login again, or close this tab to prevent accidental information leakage.
 	</b:panel>	
 </ui:define>

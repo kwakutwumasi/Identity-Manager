@@ -24,10 +24,19 @@
 	</security-role>
 	<security-constraint>
 		<web-resource-collection>
+			<web-resource-name>Universal</web-resource-name>
+			<url-pattern>/index</url-pattern>
+			<url-pattern>/probe</url-pattern>
+		</web-resource-collection>
+		<auth-constraint>
+			<role-name>IdentityAdmin</role-name>
+			<role-name>IdentityUser</role-name>
+		</auth-constraint>
+	</security-constraint>
+	<security-constraint>
+		<web-resource-collection>
 			<web-resource-name>User Management</web-resource-name>
 			<url-pattern>/ui/*</url-pattern>
-			<http-method>GET</http-method>
-			<http-method>POST</http-method>
 		</web-resource-collection>
 		<auth-constraint>
 			<role-name>IdentityAdmin</role-name>
@@ -37,8 +46,6 @@
 		<web-resource-collection>
 			<web-resource-name>Self Service</web-resource-name>
 			<url-pattern>/us/*</url-pattern>
-			<http-method>GET</http-method>
-			<http-method>POST</http-method>
 		</web-resource-collection>
 		<auth-constraint>
 			<role-name>IdentityUser</role-name>
@@ -52,6 +59,26 @@
 		</form-login-config>
 	</login-config>
 	<welcome-file-list>
-		<welcome-file>ui/identities.jsf</welcome-file>
+		<welcome-file>index</welcome-file>
 	</welcome-file-list>
+	
+	<error-page>
+		<error-code>404</error-code>
+		<location>/error404.jsf</location>
+	</error-page>
+	
+	<error-page>
+		<error-code>403</error-code>
+		<location>/error403.jsf</location>
+	</error-page>
+
+	<error-page>
+		<error-code>408</error-code>
+		<location>/error408.jsf</location>
+	</error-page>
+
+	<error-page>
+		<exception-type>java.lang.Throwable</exception-type>
+		<location>/errorGeneral.jsf</location>
+	</error-page>
 </web-app>

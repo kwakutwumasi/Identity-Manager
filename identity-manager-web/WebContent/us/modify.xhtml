@@ -5,28 +5,30 @@
     xmlns:com="http://quakearts.com/2.0/common"
     xmlns:ident="http://quakearts.com/identity"
     xmlns:b="http://quakearts.com/2.0/boot">
-<ui:composition template="../ua/t_base_bare.xhtml">
+<ui:composition template="../ua/template.xhtml">
 	<ui:define name="body">
 		<div id="container" />
 		<h:form>
 			<b:messages dismissible="true" showDetail="true" id="messages"></b:messages>
 			<b:panel>
-				<span class="h5">Change your password</span>
 				<b:formGroup>
-					<b:inputText placeholder="Name" value="#{profile.user.name}">
+					<label>Name</label>
+					<b:inputText placeholder="First name Last name" value="#{profile.user.name}">
 						<f:facet name="label">
 							<b:fa value="id-badge"></b:fa>
 						</f:facet>
 					</b:inputText>
 				</b:formGroup>
 				<b:formGroup>
-					<b:inputText value="#{profile.user.username}">
+					<label>Username</label>
+					<b:inputText disabled="true" value="#{profile.user.username}">
 						<f:facet name="label">
 							<b:glyph value="user"></b:glyph>
 						</f:facet>
 					</b:inputText>
 				</b:formGroup>
 				<b:formGroup>
+					<label>Change Your Password</label>
 					<ident:password value="#{profile.user.password}" validator="#{profile.passwordComplexityValidator.validate}"
 						validating="true" placeholder="Enter Your Password">
 						<f:facet name="label">

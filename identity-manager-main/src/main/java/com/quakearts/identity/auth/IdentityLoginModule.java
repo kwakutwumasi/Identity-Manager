@@ -5,8 +5,8 @@ import java.security.Principal;
 import java.security.acl.Group;
 import java.util.Enumeration;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -30,7 +30,6 @@ import com.quakearts.identity.model.UserLog;
 import com.quakearts.identity.model.UserRole;
 import com.quakearts.identity.util.IdentityConfig;
 import com.quakearts.webapp.orm.DataStoreFactory;
-import com.quakearts.webapp.orm.query.helper.ParameterMapBuilder;
 import com.quakearts.webapp.security.auth.DirectoryRoles;
 import com.quakearts.webapp.security.auth.OtherPrincipal;
 import com.quakearts.webapp.security.auth.UserPrincipal;
@@ -126,12 +125,13 @@ public class IdentityLoginModule implements LoginModule {
 		}
 			
 		try{
-			List<UserLog> users = DataStoreFactory.getInstance().getDataStore().list(UserLog.class,
-					ParameterMapBuilder.createParameters().add("username", username)
-					.add("password", hashPassword).build());
+			Optional<UserLog> users = DataStoreFactory.getInstance().getDataStore().find(UserLog.class)
+					.filterBy("username").withAValueEqualTo(username)
+					.filterBy("password").withAValueEqualTo(hashPassword)
+					.thenGetFirst();
 			
-			if((loginOk = !users.isEmpty())){
-				user = users.get(0);
+			if((loginOk = users.isPresent())){
+				user = users.get();
 			}
 		} finally {
 			if(localTran)
