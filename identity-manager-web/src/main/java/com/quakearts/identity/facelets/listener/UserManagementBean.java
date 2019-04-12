@@ -1,6 +1,6 @@
 package com.quakearts.identity.facelets.listener;
 
-import java.util.List;
+import java.util.Optional;
 
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
@@ -13,7 +13,6 @@ import com.quakearts.identity.model.UserRole;
 import com.quakearts.webapp.facelets.base.BaseBean;
 import com.quakearts.webapp.orm.DataStore;
 import com.quakearts.webapp.orm.DataStoreFactory;
-import com.quakearts.webapp.orm.query.helper.ParameterMapBuilder;
 
 @Named("userManagement")
 @ViewScoped
@@ -120,10 +119,11 @@ public class UserManagementBean extends BaseBean {
 
 		FacesContext ctx = FacesContext.getCurrentInstance();
 		DataStore dataStore = DataStoreFactory.getInstance().getDataStore();
-		List<UserLog> ousers = dataStore.list(UserLog.class,ParameterMapBuilder.createParameters()
-				.add("username", user.getUsername()).build());
+		Optional<UserLog> optionalUserLog = dataStore.find(UserLog.class)
+				.filterBy("username").withAValueEqualTo(user.getUsername())
+				.thenGetFirst();
 
-		if(!ousers.isEmpty()){
+		if(optionalUserLog.isPresent()){
 			addError("Duplication error",
 					"Username already exists on the system. " + user.getUsername(),
 					FacesContext.getCurrentInstance());
