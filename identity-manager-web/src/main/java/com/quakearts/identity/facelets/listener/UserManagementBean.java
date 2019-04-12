@@ -126,7 +126,7 @@ public class UserManagementBean extends BaseBean {
 		if(optionalUserLog.isPresent()){
 			addError("Duplication error",
 					"Username already exists on the system. " + user.getUsername(),
-					FacesContext.getCurrentInstance());
+					ctx);
 			return;
 		}
 		
