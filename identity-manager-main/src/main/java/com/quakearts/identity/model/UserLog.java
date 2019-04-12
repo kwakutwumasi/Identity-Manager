@@ -35,7 +35,7 @@ public class UserLog implements java.io.Serializable {
 	@Column(nullable=false)
 	private boolean valid;
 	@OneToMany(mappedBy="userLog", fetch=FetchType.EAGER)
-	private Set<UserRole> userRoles = new HashSet<UserRole>(0);
+	private Set<UserRole> userRoles = new HashSet<>(0);
 
 	public UserLog() {
 	}
@@ -108,7 +108,7 @@ public class UserLog implements java.io.Serializable {
 	
 	public List<UserRole> getRolesList(){
 		if(rolesList == null)
-			rolesList = new ArrayList<UserRole>(getUserRoles());
+			rolesList = new ArrayList<>(getUserRoles());
 		
 		return rolesList;
 	}

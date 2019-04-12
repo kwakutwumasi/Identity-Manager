@@ -1,13 +1,19 @@
 package com.quakearts.identity.facelets.validator;
 
+import java.io.Serializable;
+
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.validator.Validator;
 import javax.faces.validator.ValidatorException;
 
-public class PasswordComplexityValidator implements Validator {
+public class PasswordComplexityValidator implements Validator, Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -8367007845083880711L;
 	private static final String ERRORMESSAGE = "Password does not meet complexity requirements."
 	+ " Please ensure the password is at least 8 characters"
 	+ " long, and contains at least one upper case character,"
@@ -15,7 +21,7 @@ public class PasswordComplexityValidator implements Validator {
 
 	@Override
 	public void validate(FacesContext context, UIComponent component,
-			Object value) throws ValidatorException {
+			Object value){
 		
 		if(value!=null 
 				&& !value.toString().trim().isEmpty() 

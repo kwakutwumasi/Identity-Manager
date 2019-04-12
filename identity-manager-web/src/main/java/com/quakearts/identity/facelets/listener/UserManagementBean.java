@@ -2,11 +2,11 @@ package com.quakearts.identity.facelets.listener;
 
 import java.util.List;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ManagedProperty;
-import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
+import javax.faces.view.ViewScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import com.quakearts.identity.model.UserLog;
 import com.quakearts.identity.model.UserRole;
@@ -15,10 +15,11 @@ import com.quakearts.webapp.orm.DataStore;
 import com.quakearts.webapp.orm.DataStoreFactory;
 import com.quakearts.webapp.orm.query.helper.ParameterMapBuilder;
 
-@ManagedBean(name="userManagement")
+@Named("userManagement")
 @ViewScoped
 public class UserManagementBean extends BaseBean {
 
+	private static final String INVALID_ENTRY = "Invalid Entry";
 	/**
 	 * 
 	 */
@@ -27,12 +28,8 @@ public class UserManagementBean extends BaseBean {
 	private static final long serialVersionUID = -7063591289223968569L;
 	private UserLog user;
 	
-	@ManagedProperty("#{systemManagement}")
+	@Inject @Named("systemManagement")
 	private SystemManagementBean systemManagementBean;
-
-	public void setSystemManagementBean(SystemManagementBean systemManagementBean) {
-		this.systemManagementBean = systemManagementBean;
-	}
 	
 	public UserLog getUser() {
 		if(user == null) {
@@ -76,9 +73,8 @@ public class UserManagementBean extends BaseBean {
 
 	public void addAllRoles(ActionEvent event) {
 		FacesContext ctx = FacesContext.getCurrentInstance();
-		String[] applicationRoles;
-		if(systemManagementBean!=null 
-				&& (applicationRoles = systemManagementBean.getRoles()).length>0) {
+		String[] applicationRoles = systemManagementBean.getRoles();
+		if(applicationRoles.length>0) {
 			this.roles = applicationRoles;
 			addMessage("Roles added", "All roles have been added", ctx);
 		} else {
@@ -102,21 +98,21 @@ public class UserManagementBean extends BaseBean {
 	
 	public void addUser(ActionEvent event) {
 		if(user == null) {
-			addError("Invalid Entry",
+			addError(INVALID_ENTRY,
 					"User cannot be empty.",
 					FacesContext.getCurrentInstance());
 			return;
 		}
 		
 		if(user.getUsername() == null || user.getUsername().trim().isEmpty()) {
-			addError("Invalid Entry",
+			addError(INVALID_ENTRY,
 					"Username cannot be empty.",
 					FacesContext.getCurrentInstance());
 			return;
 		}
 
 		if(user.getPassword() == null || user.getPassword().trim().isEmpty()) {
-			addError("Invalid Entry",
+			addError(INVALID_ENTRY,
 					"Password cannot be empty.",
 					FacesContext.getCurrentInstance());
 			return;
@@ -163,12 +159,11 @@ public class UserManagementBean extends BaseBean {
 
 	
 	public void deleteUser(ActionEvent event) {
-		 if(user.getUsername().equals("administrator")){
-			 addError("Invalid operation", "You cannot delete this user", FacesContext.getCurrentInstance());
-			 return;
-		 }
-			 
 		if(user !=null && user.getId()>0){
+			if(user.getUsername().equals("administrator")){
+				addError("Invalid operation", "You cannot delete this user", FacesContext.getCurrentInstance());
+				return;
+			}
 			DataStore dataStore = DataStoreFactory.getInstance().getDataStore();
 			for(UserRole role:user.getUserRoles()) {
 				dataStore.delete(role);

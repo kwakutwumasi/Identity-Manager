@@ -1,16 +1,16 @@
 package com.quakearts.identity.facelets.listener;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
 
 import com.quakearts.identity.model.UserLog;
 import com.quakearts.identity.model.UserRole;
 import com.quakearts.webapp.facelets.base.BaseBean;
 import com.quakearts.webapp.orm.DataStoreFactory;
 
-@ManagedBean(name = "roleManagement")
+@Named("roleManagement")
 @ViewScoped
 public class RoleManagementBean extends BaseBean {
 

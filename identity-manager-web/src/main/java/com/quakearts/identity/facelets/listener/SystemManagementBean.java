@@ -2,18 +2,25 @@ package com.quakearts.identity.facelets.listener;
 
 import java.util.ArrayList;
 import java.util.Properties;
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.faces.model.SelectItem;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
+
 import com.quakearts.identity.util.IdentityConfig;
 import com.quakearts.webapp.facelets.base.BaseBean;
 
-@ManagedBean(name="systemManagement")
+@Named("systemManagement")
 @ViewScoped
 public class SystemManagementBean extends BaseBean {
 
+	private static final String SMC = ";";
+	private static final String IDENTITY_APPLICATIONS = "identity.applications";
+	private static final String SUCCESS = "Success";
+	private static final String ERROR = "Error";
+	private static final String NO_APPLICATION = "No application has been selected";
+	private static final String NO_ACTION_TAKEN = "No action taken";
 	/**
 	 * 
 	 */
@@ -48,10 +55,10 @@ public class SystemManagementBean extends BaseBean {
 
 	public SelectItem[] getApplications() {
 		Properties props = IdentityConfig.getIdentityProperties();
-		String applicationsString = props.getProperty("identity.applications");
-		ArrayList<SelectItem> itemsList = new ArrayList<SelectItem>();
+		String applicationsString = props.getProperty(IDENTITY_APPLICATIONS);
+		ArrayList<SelectItem> itemsList = new ArrayList<>();
 		if(applicationsString!=null && !applicationsString.trim().isEmpty()){
-			for(String appcombined: applicationsString.trim().split(";")){
+			for(String appcombined: applicationsString.trim().split(SMC)){
 				String[] nameValue = appcombined.split("\\|",2);
 				if(nameValue.length<2)
 					continue;
@@ -69,7 +76,7 @@ public class SystemManagementBean extends BaseBean {
 			String rolesstring = props.getProperty(application);
 			
 			if(rolesstring!=null && !rolesstring.trim().isEmpty()){
-				return rolesstring.trim().split(";");
+				return rolesstring.trim().split(SMC);
 			}
 		}
 		return new String[0];
@@ -79,9 +86,9 @@ public class SystemManagementBean extends BaseBean {
 		if(applicationName==null)
 			return;
 		
-		String application = applicationName.replaceAll("\\s","").toLowerCase();
+		String applicationProperty = applicationName.replaceAll("\\s","").toLowerCase();
 		Properties props = IdentityConfig.getIdentityProperties();
-		String applicationsString = props.getProperty("identity.applications");
+		String applicationsString = props.getProperty(IDENTITY_APPLICATIONS);
 		StringBuilder builder= new StringBuilder();
 		if(applicationsString!=null){
 			if(applicationsString.contains(applicationName)){
@@ -89,28 +96,28 @@ public class SystemManagementBean extends BaseBean {
 				return;
 			}
 			
-			builder.append(applicationsString).append(";");
+			builder.append(applicationsString).append(SMC);
 		}
 		
-		builder.append(application).append("|").append(applicationName);
-		props.setProperty("identity.applications", builder.toString());
+		builder.append(applicationProperty).append("|").append(applicationName);
+		props.setProperty(IDENTITY_APPLICATIONS, builder.toString());
 		
 		if(IdentityConfig.saveIdentityProperties())
-			addMessage("Success", "Application has been added", FacesContext.getCurrentInstance());
+			addMessage(SUCCESS, "Application has been added", FacesContext.getCurrentInstance());
 		else {
-			props.setProperty("identity.applications", applicationsString);
-			addError("Error", "Identity properties could not saved", FacesContext.getCurrentInstance());
+			props.setProperty(IDENTITY_APPLICATIONS, applicationsString);
+			addError(ERROR, "Identity properties could not saved", FacesContext.getCurrentInstance());
 		}
 	}
 
 	public void addRoleForApplication(ActionEvent event){
 		if(role==null){
-			addError("No action taken", "No role has been selected", FacesContext.getCurrentInstance());
+			addError(NO_ACTION_TAKEN, "No role has been selected", FacesContext.getCurrentInstance());
 			return;
 		}
 		
 		if(application==null){
-			addError("No action taken", "No application has been selected", FacesContext.getCurrentInstance());
+			addError(NO_ACTION_TAKEN, NO_APPLICATION, FacesContext.getCurrentInstance());
 			return;
 		}
 
@@ -122,7 +129,7 @@ public class SystemManagementBean extends BaseBean {
 				addError("Duplicate role", "The role already exists", FacesContext.getCurrentInstance());
 				return;
 			}
-			builder.append(rolesstring).append(";");
+			builder.append(rolesstring).append(SMC);
 		}
 		
 		builder.append(role);
@@ -130,23 +137,23 @@ public class SystemManagementBean extends BaseBean {
 		props.setProperty(application, builder.toString());
 		
 		if(IdentityConfig.saveIdentityProperties())
-			addMessage("Success", "Role has been added", FacesContext.getCurrentInstance());
+			addMessage(SUCCESS, "Role has been added", FacesContext.getCurrentInstance());
 		else
-			addError("Error", "Identity properties could not be saved", FacesContext.getCurrentInstance());
+			addError(ERROR, "Identity properties could not be saved", FacesContext.getCurrentInstance());
 		
 	}
 	
 	public void removeApplication(ActionEvent event){
 		if(application==null){
-			addError("No action taken", "No application has been selected", FacesContext.getCurrentInstance());
+			addError(NO_ACTION_TAKEN, NO_APPLICATION, FacesContext.getCurrentInstance());
 			return;
 		}
 
 		Properties props = IdentityConfig.getIdentityProperties();
-		String applicationsString = props.getProperty("identity.applications");
+		String applicationsString = props.getProperty(IDENTITY_APPLICATIONS);
 		if(applicationsString !=null && applicationsString.contains(application)){
 			int start = applicationsString.indexOf(application);
-			int end = applicationsString.indexOf(";", start);
+			int end = applicationsString.indexOf(SMC, start);
 			if(end==-1)
 				end = applicationsString.length()-1;
 			else
@@ -154,30 +161,30 @@ public class SystemManagementBean extends BaseBean {
 
 			String applicationEntry = applicationsString.substring(start,end);
 			
-			props.setProperty("identity.applications", applicationsString.replace(applicationEntry, ""));
+			props.setProperty(IDENTITY_APPLICATIONS, applicationsString.replace(applicationEntry, ""));
 			
 			if(props.containsKey(application)){
 				props.remove(application);
 			}
 			
 			if(IdentityConfig.saveIdentityProperties())
-				addMessage("Success", "Application has been removed", FacesContext.getCurrentInstance());
+				addMessage(SUCCESS, "Application has been removed", FacesContext.getCurrentInstance());
 			else
-				addError("Error", "Identity properties could not saved", FacesContext.getCurrentInstance());
+				addError(ERROR, "Identity properties could not saved", FacesContext.getCurrentInstance());
 		} else {
-			addError("No action taken", "The selected application has not been found", FacesContext.getCurrentInstance());
+			addError(NO_ACTION_TAKEN, "The selected application has not been found", FacesContext.getCurrentInstance());
 		}
 		application=null;
 	}
 	
 	public void removeRole(ActionEvent event){
 		if(role==null){
-			addError("No action taken", "No role has been selected", FacesContext.getCurrentInstance());
+			addError(NO_ACTION_TAKEN, "No role has been selected", FacesContext.getCurrentInstance());
 			return;
 		}
 		
 		if(application==null){
-			addError("No action taken", "No application has been selected", FacesContext.getCurrentInstance());
+			addError(NO_ACTION_TAKEN, NO_APPLICATION, FacesContext.getCurrentInstance());
 			return;
 		}
 		
@@ -185,15 +192,15 @@ public class SystemManagementBean extends BaseBean {
 		String rolesstring = props.getProperty(application);
 		
 		if(rolesstring!=null && rolesstring.contains(role)){
-			props.setProperty(application, rolesstring.replace(role, "").replace(";;", ";"));
+			props.setProperty(application, rolesstring.replace(role, "").replace(";;", SMC));
 			
 			if(IdentityConfig.saveIdentityProperties())
-				addMessage("Success", "Role has been removed", FacesContext.getCurrentInstance());
+				addMessage(SUCCESS, "Role has been removed", FacesContext.getCurrentInstance());
 			else
-				addError("Error", "Identity properties could not be saved", FacesContext.getCurrentInstance());
+				addError(ERROR, "Identity properties could not be saved", FacesContext.getCurrentInstance());
 
 		} else {
-			addError("No action taken", "The selected role has not been found", FacesContext.getCurrentInstance());
+			addError(NO_ACTION_TAKEN, "The selected role has not been found", FacesContext.getCurrentInstance());
 		}
 
 	}

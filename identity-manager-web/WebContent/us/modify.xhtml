@@ -30,7 +30,8 @@
 				<b:formGroup>
 					<label>Change Your Password</label>
 					<ident:password value="#{profile.user.password}" validator="#{profile.passwordComplexityValidator.validate}"
-						validating="true" placeholder="Enter Your Password">
+						validating="true" placeholder="Enter Your Password"
+						validatorStyle="margin-top:15px" alertStyle="margin-top:15px">
 						<f:facet name="label">
 							<b:glyph value="lock"></b:glyph>
 						</f:facet>

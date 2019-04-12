@@ -1,19 +1,36 @@
 package com.quakearts.identity.facelets.input;
 
 import javax.el.ValueExpression;
+import javax.faces.application.FacesMessage;
+import javax.faces.component.UIComponent;
 import javax.faces.component.UIInput;
 import javax.faces.context.FacesContext;
+import javax.faces.validator.ValidatorException;
 
-import com.quakearts.identity.facelets.validator.PasswordConfirmValidator;
 import com.quakearts.identity.util.IdentityConfig;
 import com.quakearts.webapp.facelets.util.ObjectExtractor;
 import com.quakearts.webapp.security.util.HashPassword;
 
 public class PasswordHashingComponent extends UIInput {	
 	public PasswordHashingComponent() {
-		addValidator(new PasswordConfirmValidator(this));
+		addValidator(this::validate);
 	}
 		
+	public void validate(FacesContext context, UIComponent component, Object value) {
+		if(!Boolean.parseBoolean(get("validating")))
+			return;
+		
+		String checkValue = context.getExternalContext().getRequestParameterMap().get(component.getClientId(context)+"_validate");
+		if(checkValue==null)
+			throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_FATAL, "Validation entry is null", "No validation entry was passed with the form."));
+		
+		if(value==null)
+			throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_FATAL, "Password entry is null", "Password entry is null."));
+		
+		if(!value.equals(checkValue))
+			throw new ValidatorException(new FacesMessage(FacesMessage.SEVERITY_FATAL, "Invalid pasword", "Passwords do not match."));
+	}
+	
 	@Override
 	public void restoreState(FacesContext ctx, Object stateobj) {
 		Object[] state = (Object[])stateobj;
@@ -28,8 +45,8 @@ public class PasswordHashingComponent extends UIInput {
 		return state;
 	}
 
-	public static final String COMPONENT_FAMILY = "com.quakearts.identity",
-	   COMPONENT_TYPE = "com.quakearts.identity.input";
+	public static final String COMPONENT_FAMILY = "com.quakearts.identity";
+	public static final String COMPONENT_TYPE = "com.quakearts.identity.input";
 
 	@Override
 	public String getFamily() {

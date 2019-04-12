@@ -68,6 +68,11 @@
 			<version>2.2.14</version>
 		</dependency>
 		<dependency>
+			<groupId>com.quakearts.webtools</groupId>
+			<artifactId>qa-weldjsf-cdi</artifactId>
+			<version>1.0.1</version>
+		</dependency>
+		<dependency>
 			<groupId>com.quakearts.identity</groupId>
 			<artifactId>identity-manager-main</artifactId>
 			<version>2.1.0</version>

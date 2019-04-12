@@ -1,22 +1,27 @@
 package com.quakearts.identity.facelets.listener;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-import javax.faces.bean.ManagedBean;
-import javax.faces.bean.ViewScoped;
 import javax.faces.event.ActionEvent;
+import javax.faces.view.ViewScoped;
+import javax.inject.Named;
 
 import com.quakearts.identity.model.UserLog;
+import com.quakearts.identity.model.UserRole;
 import com.quakearts.webapp.facelets.base.BaseBean;
 import com.quakearts.webapp.orm.DataStoreFactory;
 import com.quakearts.webapp.orm.query.helper.ParameterMapBuilder;
 
-@ManagedBean(name="search")
+@Named("search")
 @ViewScoped
 public class SearchUsersBean extends BaseBean {
 
+	private static final String VALID = "valid";
 	/**
 	 * 
 	 */
@@ -32,32 +37,37 @@ public class SearchUsersBean extends BaseBean {
 			ParameterMapBuilder builder = ParameterMapBuilder.createParameters();
 			
 			if (status != null && !status.trim().isEmpty()) {
-				if (status.equals("valid"))
-					builder.add("valid", true);
-				else if (status.equals("invalid"))
-					builder.add("valid", false);
+				filterByInvalidity(builder);
 			}
 
 			if (username != null && !username.trim().isEmpty())
 				builder.addVariableString("username", username);
 
-			if (roles != null && roles.trim().length() > 0) {
-				String[] rolesArr = roles.split(";");
-				if (rolesArr.length > 1) {
-					builder.disjoin();
-					for (String roleName: rolesArr) {
-						builder.add("userRole.roleName", roleName);
-					}
-					builder.endjoin();
-				} else {
-					builder.add("userRole.roleName", rolesArr[0]);
-				}
+			users = DataStoreFactory.getInstance().getDataStore().list(UserLog.class, builder.build());
+			if(roles!=null && !roles.trim().isEmpty()){
+				users = filterByRoles(users);
 			}
-
-			users = new LinkedHashSet<>(DataStoreFactory.getInstance().getDataStore().list(UserLog.class, builder.build()));
+			users = new LinkedHashSet<>(users);
 		}
 
 		return users;
+	}
+
+	private void filterByInvalidity(ParameterMapBuilder builder) {
+		if (status.equals(VALID))
+			builder.add(VALID, true);
+		else if (status.equals("invalid"))
+			builder.add(VALID, false);
+	}
+
+	private Collection<UserLog> filterByRoles(Collection<UserLog> users) {
+		String[] rolesArr = roles.split(";");
+		Collection<String> rolesSet = Arrays.asList(rolesArr);
+		return users.stream().filter(userLog->{
+			Set<String> userroles = userLog.getUserRoles()
+					.stream().map(UserRole::getRoleName).collect(Collectors.toSet());
+			return userroles.containsAll(rolesSet);
+		}).collect(Collectors.toList());
 	}
 
 	public void clear(ActionEvent event){

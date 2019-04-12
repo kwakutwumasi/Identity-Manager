@@ -13,6 +13,15 @@ import static com.quakearts.webapp.facelets.bootstrap.renderkit.RenderKitUtils.*
 
 public class PasswordHashingInputRenderer extends HtmlBasicInputRenderer {
 
+	private static final String BUTTON = "button";
+	private static final String AUTOCOMPLETE = "autocomplete";
+	private static final String PLACEHOLDER = "placeholder";
+	private static final String INPUT = "input";
+	private static final String LABEL = "label";
+	private static final String SPAN = "span_";
+	private static final String CLASS = "class";
+	private static final String STYLE = "style";
+	private static final String STYLE_CLASS = "styleClass";
 	public static final String RENDERER_TYPE = "com.quakearts.identity.input.renderer";
 	private static final Attribute[] INPUT_ATTRIBUTES = AttributeManager.getAttributes(AttributeManager.Key.INPUTTEXT);
 
@@ -28,11 +37,10 @@ public class PasswordHashingInputRenderer extends HtmlBasicInputRenderer {
 
 		ResponseWriter writer = context.getResponseWriter();
 
-		String styleClass = hashComp.get("styleClass");
-		String style = hashComp.get("style");
+		String styleClass = hashComp.get(STYLE_CLASS);
+		String style = hashComp.get(STYLE);
 
 		String id = component.getClientId(context);
-		String idJs = id.replace(":", "\\\\:");
 
 		if (validating) {
 			writer.startElement("div", component);
@@ -44,94 +52,145 @@ public class PasswordHashingInputRenderer extends HtmlBasicInputRenderer {
 			writeIdAttributeIfNecessary(context, writer, component);
 
 		if (style != null)
-			writer.writeAttribute("style", style, null);
-		writer.writeAttribute("class", "input-group", null);
+			writer.writeAttribute(STYLE, style, null);
+		writer.writeAttribute(CLASS, "input-group", null);
 		writer.write("\n");
 		writer.startElement("span", component);
-		writer.writeAttribute("class", "input-group-addon", null);
-		writer.writeAttribute("id", "span_" + id, null);
-		UIComponent labelFacet = component.getFacet("label");
+		writer.writeAttribute(CLASS, "input-group-addon", null);
+		writer.writeAttribute("id", SPAN + id, null);
+		UIComponent labelFacet = component.getFacet(LABEL);
 		if (labelFacet != null) {
 			labelFacet.encodeAll(context);
 		} else {
-			String label = hashComp.get("label");
+			String label = hashComp.get(LABEL);
 			writer.write(label != null ? label : "Password");
 		}
 
 		writer.endElement("span");
 		writer.write("\n");
 
-		writer.startElement("input", component);
+		writer.startElement(INPUT, component);
 		writer.writeAttribute("id", id + "_main", null);
 		writer.writeAttribute("name", id, null);
-		writer.writeAttribute("class", "form-control" + (styleClass != null ? " " + styleClass : ""), "styleClass");
+		writer.writeAttribute(CLASS, "form-control" + (styleClass != null ? " " + styleClass : ""), STYLE_CLASS);
 		if (validating) {
-			writer.writeAttribute("onblur", "$('#" + idJs + "_validate').focus();", null);
+			writer.writeAttribute("onblur", "$('#" + id + "_validate').focus();", null);
 		}
 
 		renderPassThruAttributes(context, writer, component, INPUT_ATTRIBUTES);
 		writer.writeAttribute("type", "password", null);
 		writer.writeAttribute("value", "", null);
-		writer.writeAttribute("aria-describedby", "span_" + id, null);
-		String placeholder = hashComp.get("placeholder");
+		writer.writeAttribute("aria-describedby", SPAN + id, null);
+		String placeholder = hashComp.get(PLACEHOLDER);
 		if (placeholder != null) {
-			writer.writeAttribute("placeholder", placeholder, null);
+			writer.writeAttribute(PLACEHOLDER, placeholder, null);
 		} else {
-			writer.writeAttribute("placeholder", "Enter password", null);
+			writer.writeAttribute(PLACEHOLDER, "Enter password", null);
 		}
 
-		writer.writeAttribute("autocomplete", "off", "autocomplete");
-		writer.endElement("input");
+		writer.writeAttribute(AUTOCOMPLETE, "off", AUTOCOMPLETE);
+		writer.endElement(INPUT);
 		writer.write("\n");
 		writer.endElement("div");
 		writer.write("\n");
 
+		addValidatorComponentIfNeccessary(context, component, hashComp, validating,
+				writer, styleClass, id, labelFacet);
+	}
+
+	private void addValidatorComponentIfNeccessary(FacesContext context, UIComponent component,
+			PasswordHashingComponent hashComp, boolean validating, ResponseWriter writer, String styleClass,
+			String id, UIComponent labelFacet) throws IOException {
+		String placeholder;
 		if (validating) {
 			writer.startElement("div", component);
-			writer.writeAttribute("style", "margin-top:15px"+(style!=null?"; "+style:""), null);
-			writer.writeAttribute("class", "input-group", null);
+			String validatorStyle = hashComp.get("validatorStyle");
+			if(validatorStyle!=null){
+				writer.writeAttribute(STYLE, validatorStyle, null);
+			}
+			writer.writeAttribute(CLASS, "input-group", null);
 			writer.write("\n");
 			writer.startElement("span", component);
-			writer.writeAttribute("class", "input-group-addon", null);
-			writer.writeAttribute("id", "span_" + id, null);
+			writer.writeAttribute(CLASS, "input-group-addon", null);
+			writer.writeAttribute("id", SPAN + id, null);
 
 			if (labelFacet != null) {
 				labelFacet.encodeAll(context);
 			} else {
-				String label = hashComp.get("label");
+				String label = hashComp.get(LABEL);
 				writer.write(label != null ? label : "");
 			}
 
 			writer.endElement("span");
 			writer.write("\n");
 
-			writer.startElement("input", component);
-			writer.writeAttribute("class", "form-control" + (styleClass != null ? " " + styleClass : ""), "styleClass");
+			writer.startElement(INPUT, component);
+			writer.writeAttribute(CLASS, "form-control" + (styleClass != null ? " " + styleClass : ""), STYLE_CLASS);
 			writer.writeAttribute("id", id + "_validate", null);
 			writer.writeAttribute("name", id + "_validate", null);
 			writer.writeAttribute("onblur",
-					"javascript:" + "if($('#" + id + "_main').val() != $('#" + idJs + "_validate').val()){"
-							+ "alert('Passwords do not match');" + "$('#" + id + "_main').focus();" + "};",
-					null);
+					"javascript:" + "if($('#" + id + "_main').val() != $('#" + id + "_validate').val()){"
+							+"$('#" + id + "_main').val(''); $('#" + id + "_validate').val('');"
+							+ "$('#" + id + "_alert').removeClass('collapse');"+ "} else {$('#" 
+							+ id + "_alert').addClass('collapse');};", null);
 			renderPassThruAttributes(context, writer, component, INPUT_ATTRIBUTES);
 			writer.writeAttribute("type", "password", null);
 			writer.writeAttribute("value", "", null);
-			writer.writeAttribute("aria-describedby", "span_" + id, null);
+			writer.writeAttribute("aria-describedby", SPAN + id, null);
 
 			placeholder = hashComp.get("validatorPlaceholder");
 			if (placeholder != null) {
-				writer.writeAttribute("placeholder", placeholder, null);
+				writer.writeAttribute(PLACEHOLDER, placeholder, null);
 			} else {
-				writer.writeAttribute("placeholder", "Confirm password", null);
+				writer.writeAttribute(PLACEHOLDER, "Confirm password", null);
 			}
 
-			writer.writeAttribute("autocomplete", "off", "autocomplete");
+			writer.writeAttribute(AUTOCOMPLETE, "off", AUTOCOMPLETE);
 			writer.write("\n");
 			writer.endElement("div");
 			writer.write("\n");
+			addAlert(component, hashComp, id, writer);
 			writer.endElement("div");
 			writer.write("\n");
 		}
+	}
+
+	private void addAlert(UIComponent component, PasswordHashingComponent hashComp, String id, ResponseWriter writer)
+			throws IOException {
+		writer.startElement("div", component);
+		writer.writeAttribute("id", id+"_alert", null);		
+		String alertStyle = hashComp.get("alertStyle");
+		if (alertStyle != null) {
+			writer.writeAttribute(STYLE, alertStyle, STYLE);
+		}
+		String alertClass = hashComp.get("alertClass");		
+		writer.writeAttribute(CLASS, "alert alert-danger collapse "+(alertClass!=null?" "+alertClass:""), null);
+		writer.writeAttribute("role", "alert", null);
+
+		writer.write("\n");
+		writer.writeText("Passwords do not match", component, null);
+		writer.write("\n");
+		
+		boolean dismissible = Boolean.parseBoolean(hashComp.get("alertDismissible"));
+		
+		if(dismissible){
+			writer.write("\n");
+			writer.startElement(BUTTON, component);
+			writer.writeAttribute("type", BUTTON, null);
+			writer.writeAttribute(CLASS, "close", null);
+			writer.writeAttribute("data-dismiss", "alert", null);
+			writer.writeAttribute("aria-label", "Close", null);
+			writer.startElement("span", component);
+			writer.writeAttribute("aria-hidden", "true", null);
+			writer.write("&times;");
+			writer.endElement("span");
+			writer.write("\n");
+			writer.endElement(BUTTON);
+			writer.write("\n");
+		}
+		
+		writer.endElement("div");
+		writer.write("\n");
 	}
 
 	@Override
@@ -146,8 +205,6 @@ public class PasswordHashingInputRenderer extends HtmlBasicInputRenderer {
 		}
 		if (component == null) {
 			throw new NullPointerException("Component is null");
-		} else {
-			return;
 		}
 	}
 
