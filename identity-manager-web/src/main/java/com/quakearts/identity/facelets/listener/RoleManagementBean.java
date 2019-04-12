@@ -14,6 +14,9 @@ import com.quakearts.webapp.orm.DataStoreFactory;
 @ViewScoped
 public class RoleManagementBean extends BaseBean {
 
+	private static final String WAS_SUCCESFULLY_ADDED = " was succesfully added";
+	private static final String THE_ROLE = "The role ";
+	private static final String ROLE_MODIFIED = "Role modified";
 	/**
 	 * 
 	 */
@@ -64,13 +67,25 @@ public class RoleManagementBean extends BaseBean {
 		}
 
 		if (user != null && user.getId() > 0) {
-			for(String role:roles){
-				UserRole newUserRole = new UserRole();
-				newUserRole.setRoleName(role);
-				newUserRole.setUserLog(user);
-				user.getRolesList().add(newUserRole);
-				DataStoreFactory.getInstance().getDataStore().save(newUserRole);
-				addMessage("Role modified", "The role " + newUserRole.getRoleName() + " was succesfully added", ctx);
+			if(roles!=null){
+				for(String role:roles){
+					UserRole newUserRole = new UserRole();
+					newUserRole.setRoleName(role);
+					newUserRole.setUserLog(user);
+					user.getRolesList().add(newUserRole);
+					DataStoreFactory.getInstance().getDataStore().save(newUserRole);
+					addMessage(ROLE_MODIFIED, THE_ROLE + newUserRole.getRoleName() + WAS_SUCCESFULLY_ADDED, ctx);
+				}
+			}
+			if(customroles!=null){
+				for(String role:customroles.split(";")){
+					UserRole newUserRole = new UserRole();
+					newUserRole.setRoleName(role);
+					newUserRole.setUserLog(user);
+					user.getRolesList().add(newUserRole);
+					DataStoreFactory.getInstance().getDataStore().save(newUserRole);
+					addMessage(ROLE_MODIFIED, THE_ROLE + newUserRole.getRoleName() + WAS_SUCCESFULLY_ADDED, ctx);
+				}
 			}
 		} else {
 			addError("User not found", "The user does not exist", ctx);
@@ -82,7 +97,7 @@ public class RoleManagementBean extends BaseBean {
 		if (userRole != null && userRole.getRid() > 0) {
 			DataStoreFactory.getInstance().getDataStore().update(userRole);
 			setOutcome("success");
-			addMessage("Role modified", "The role was succesfully edited", ctx);
+			addMessage(ROLE_MODIFIED, "The role was succesfully edited", ctx);
 		} else {
 			setOutcome("error");
 			addError(
@@ -102,7 +117,7 @@ public class RoleManagementBean extends BaseBean {
 			
 			DataStoreFactory.getInstance().getDataStore().delete(userRole);
 			setOutcome("success");
-			addMessage("Role deleted", "The role "+userRole.getRoleName()+" was succesfully deleted", ctx);
+			addMessage("Role deleted", THE_ROLE+userRole.getRoleName()+" was succesfully deleted", ctx);
 			userRole = null;
 		} else {
 			setOutcome("error");
