@@ -72,6 +72,7 @@ public class RoleManagementBean extends BaseBean {
 					UserRole newUserRole = new UserRole();
 					newUserRole.setRoleName(role);
 					newUserRole.setUserLog(user);
+					newUserRole.setValid(true);
 					user.getRolesList().add(newUserRole);
 					DataStoreFactory.getInstance().getDataStore().save(newUserRole);
 					addMessage(ROLE_MODIFIED, THE_ROLE + newUserRole.getRoleName() + WAS_SUCCESFULLY_ADDED, ctx);
@@ -82,6 +83,7 @@ public class RoleManagementBean extends BaseBean {
 					UserRole newUserRole = new UserRole();
 					newUserRole.setRoleName(role);
 					newUserRole.setUserLog(user);
+					newUserRole.setValid(true);
 					user.getRolesList().add(newUserRole);
 					DataStoreFactory.getInstance().getDataStore().save(newUserRole);
 					addMessage(ROLE_MODIFIED, THE_ROLE + newUserRole.getRoleName() + WAS_SUCCESFULLY_ADDED, ctx);
