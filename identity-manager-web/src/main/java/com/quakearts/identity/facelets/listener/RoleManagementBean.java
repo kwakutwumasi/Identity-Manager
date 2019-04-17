@@ -78,7 +78,7 @@ public class RoleManagementBean extends BaseBean {
 					addMessage(ROLE_MODIFIED, THE_ROLE + newUserRole.getRoleName() + WAS_SUCCESFULLY_ADDED, ctx);
 				}
 			}
-			if(customroles!=null){
+			if(customroles!=null && !customroles.trim().isEmpty()){
 				for(String role:customroles.split(";")){
 					UserRole newUserRole = new UserRole();
 					newUserRole.setRoleName(role);
