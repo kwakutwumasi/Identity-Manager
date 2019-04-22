@@ -38,13 +38,34 @@
 					</b:selectOneInputGroup>
 				</b:formGroup>
 				<h:panelGroup layout="block" id="rolesPanel" binding="#{rolesBindingPanel}">
+					<b:row rendered="#{! empty systemManagement.application}">
+						<b:column xs="6">
+							<b:formGroup>
+								<label>Roles</label>
+								<b:selectManyListbox id="rolesSelect" limit="true" size="10" 
+									value="#{userManagement.roles}">
+									<f:selectItems value="#{systemManagement.roles}"></f:selectItems>
+								</b:selectManyListbox>
+							</b:formGroup>
+						</b:column>
+						<b:column xs="6">
+							<b:formGroup>
+								<label>Saved Roles</label>
+								<b:selectManyListbox id="storedRolesSelect"
+									mainStyle="#{loader.overlayClass}"
+								 	limit="true" size="10" value="#{userManagement.storedRoles}">
+									<f:selectItems value="#{userManagement.storedRoles}"></f:selectItems>
+									<f:ajax onevent="#{loader.overlayAjaxLoader}" execute="@this" render="@this"></f:ajax>
+								</b:selectManyListbox>
+							</b:formGroup>
+						</b:column>
+					</b:row>
 					<b:formGroup rendered="#{! empty systemManagement.application}">
-						<label>Roles</label>
-						<b:selectManyListbox limit="true" size="10" value="#{userManagement.roles}">
-							<f:selectItems value="#{systemManagement.roles}"></f:selectItems>
-						</b:selectManyListbox>
-					</b:formGroup>
-					<b:formGroup rendered="#{! empty systemManagement.application}">
+						<b:button>
+							<b:fa value="save"></b:fa> Save Selected
+							<com:executeAction listener="#{userManagement.saveSelectedRoles}"></com:executeAction>
+							<f:ajax execute="rolesSelect" render="storedRolesSelect"></f:ajax>
+						</b:button>
 						<b:button>
 							<b:fa value="angle-double-down"></b:fa> Add All
 							<com:executeAction listener="#{userManagement.addAllRoles}"></com:executeAction>

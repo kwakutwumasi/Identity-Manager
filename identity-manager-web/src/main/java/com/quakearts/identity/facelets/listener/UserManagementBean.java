@@ -1,6 +1,9 @@
 package com.quakearts.identity.facelets.listener;
 
+import java.util.Arrays;
 import java.util.Optional;
+import java.util.Set;
+import java.util.TreeSet;
 
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
@@ -24,6 +27,7 @@ public class UserManagementBean extends BaseBean {
 	 */
 	private String userroles;
 	private String[] roles;
+	private Set<String> storedRoles = new TreeSet<>();
 	private static final long serialVersionUID = -7063591289223968569L;
 	private UserLog user;
 	
@@ -69,12 +73,30 @@ public class UserManagementBean extends BaseBean {
 	public void setRoles(String[] roles) {
 		this.roles = roles;
 	}
+	
+	public Set<String> getStoredRoles() {
+		return storedRoles;
+	}
 
+	public void setStoredRoles(Set<String> storedRoles) {
+		if(storedRoles!=null){
+			this.storedRoles = new TreeSet<>(storedRoles);
+		} else {
+			this.storedRoles = new TreeSet<>();
+		}
+	}
+
+	public void saveSelectedRoles(ActionEvent actionEvent){
+		if(roles!=null){
+			storedRoles.addAll(Arrays.asList(roles));
+		}
+	}
+	
 	public void addAllRoles(ActionEvent event) {
 		FacesContext ctx = FacesContext.getCurrentInstance();
 		String[] applicationRoles = systemManagementBean.getRoles();
 		if(applicationRoles.length>0) {
-			this.roles = applicationRoles;
+			this.storedRoles.addAll(Arrays.asList(applicationRoles));
 			addMessage("Roles added", "All roles have been added", ctx);
 		} else {
 			addError("Invalid Selection", "No roles were added", ctx);
@@ -144,14 +166,17 @@ public class UserManagementBean extends BaseBean {
 			}
 		}
 		
-		if(roles!=null)
-			for(String role : roles){
-				UserRole userrole = new UserRole();
-				userrole.setRoleName(role.trim());
-				userrole.setUserLog(user);
-				userrole.setValid(true);
-				dataStore.save(userrole);
-			}
+		if(roles!=null){
+			storedRoles.addAll(Arrays.asList(roles));
+		}
+		
+		for(String role : storedRoles){
+			UserRole userrole = new UserRole();
+			userrole.setRoleName(role.trim());
+			userrole.setUserLog(user);
+			userrole.setValid(true);
+			dataStore.save(userrole);
+		}
 		
 		addMessage("Success", "User added successfully", ctx);
 		user = new UserLog();
