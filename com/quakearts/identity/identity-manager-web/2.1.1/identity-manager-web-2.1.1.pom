@@ -1,0 +1,105 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>identity-manager-web</artifactId>
+	<packaging>jar</packaging>
+	<name>Identity Manager Web</name>
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>3.0.0</version>
+				<configuration>
+					<warSourceDirectory>WebContent</warSourceDirectory>
+					<attachClasses>false</attachClasses>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.8</version>
+				<executions>
+					<execution>
+						<id>copy-wars</id>
+						<phase>package</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<target name="Process WebContent">
+								<echo>Processing WebContent</echo>
+								<copy todir="../identity-manager-base/webservers/default/webapps/webapp">
+									<fileset dir="WebContent" />
+								</copy>
+								<copy file="test-config/webapp.config.json" 
+									todir="../identity-manager-base/webservers/default/webapps/webapp/META-INF"
+									overwrite="true" />
+								<copy file="test-config/context.xml" 
+									todir="../identity-manager-base/webservers/default/webapps/webapp/META-INF"
+									overwrite="true" />
+								<zip destfile="${project.build.directory}/identity-manager-web.war">
+								  <zipfileset dir="WebContent" />
+								</zip>
+							</target>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>	
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>		
+		</plugins>
+	</build>
+	<dependencies>
+		<dependency>
+			<groupId>com.quakearts.webtools</groupId>
+			<artifactId>qa-boot</artifactId>
+			<version>2.2.1</version>
+		</dependency>
+		<dependency>
+			<groupId>com.quakearts.webtools</groupId>
+			<artifactId>qa-orm-hibernate-web</artifactId>
+			<version>1.0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.faces</groupId>
+			<artifactId>jsf-api</artifactId>
+			<version>2.2.14</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.faces</groupId>
+			<artifactId>jsf-impl</artifactId>
+			<version>2.2.14</version>
+		</dependency>
+		<dependency>
+			<groupId>com.quakearts.webtools</groupId>
+			<artifactId>qa-weldjsf-cdi</artifactId>
+			<version>1.0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>com.quakearts.identity</groupId>
+			<artifactId>identity-manager-main</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+	</dependencies>
+	<parent>
+		<groupId>com.quakearts.identity</groupId>
+		<artifactId>identity-manager</artifactId>
+		<version>2.1.1</version>
+		<relativePath>../identity-manager</relativePath>
+	</parent>
+	<repositories>
+	    <repository>
+	        <id>quakearts-mvn-repo</id>
+	        <url>https://raw.github.com/kwakutwumasi/Quakearts-Webtools/mvn-repo/</url>
+	    </repository>
+	</repositories>
+</project>
