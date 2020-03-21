@@ -15,7 +15,7 @@ import com.quakearts.identity.model.UserLog;
 import com.quakearts.identity.model.UserRole;
 import com.quakearts.webapp.facelets.base.BaseBean;
 import com.quakearts.webapp.orm.DataStoreFactory;
-import com.quakearts.webapp.orm.query.helper.ParameterMapBuilder;
+import com.quakearts.webapp.orm.query.criteria.CriteriaMapBuilder;
 
 @Named("search")
 @ViewScoped
@@ -34,16 +34,18 @@ public class SearchUsersBean extends BaseBean {
 	public Collection<UserLog> getUsers() {
 		if (users == null) {
 
-			ParameterMapBuilder builder = ParameterMapBuilder.createParameters();
+			CriteriaMapBuilder builder = CriteriaMapBuilder.createCriteria();
 			
 			if (status != null && !status.trim().isEmpty()) {
 				filterByInvalidity(builder);
 			}
 
 			if (username != null && !username.trim().isEmpty())
-				builder.addVariableString("username", username);
+				builder.property("username").mustBeLike(username);
 
-			users = DataStoreFactory.getInstance().getDataStore().list(UserLog.class, builder.build());
+			users = DataStoreFactory.getInstance().getDataStore().find(UserLog.class)
+					.using(builder.finish())
+					.thenList();
 			if(roles!=null && !roles.trim().isEmpty()){
 				users = filterByRoles(users);
 			}
@@ -53,11 +55,11 @@ public class SearchUsersBean extends BaseBean {
 		return users;
 	}
 
-	private void filterByInvalidity(ParameterMapBuilder builder) {
+	private void filterByInvalidity(CriteriaMapBuilder builder) {
 		if (status.equals(VALID))
-			builder.add(VALID, true);
+			builder.property(VALID).mustBeEqualTo(true);
 		else if (status.equals("invalid"))
-			builder.add(VALID, false);
+			builder.property(VALID).mustBeEqualTo(false);
 	}
 
 	private Collection<UserLog> filterByRoles(Collection<UserLog> users) {

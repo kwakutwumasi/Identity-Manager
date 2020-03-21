@@ -4,6 +4,12 @@
 	<artifactId>identity-manager-web</artifactId>
 	<packaging>jar</packaging>
 	<name>Identity Manager Web</name>
+	<parent>
+		<groupId>com.quakearts.identity</groupId>
+		<artifactId>identity-manager</artifactId>
+		<version>2.2.0</version>
+		<relativePath>../identity-manager</relativePath>
+	</parent>
 	<build>
 		<plugins>
 			<plugin>
@@ -16,7 +22,6 @@
 			</plugin>
 			<plugin>
 				<artifactId>maven-antrun-plugin</artifactId>
-				<version>1.8</version>
 				<executions>
 					<execution>
 						<id>copy-wars</id>
@@ -67,7 +72,7 @@
 		<dependency>
 			<groupId>com.quakearts.webtools</groupId>
 			<artifactId>qa-orm-hibernate-web</artifactId>
-			<version>1.0.1</version>
+			<version>1.1.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.sun.faces</groupId>
@@ -90,12 +95,6 @@
 			<version>${project.version}</version>
 		</dependency>
 	</dependencies>
-	<parent>
-		<groupId>com.quakearts.identity</groupId>
-		<artifactId>identity-manager</artifactId>
-		<version>2.1.1</version>
-		<relativePath>../identity-manager</relativePath>
-	</parent>
 	<repositories>
 	    <repository>
 	        <id>quakearts-mvn-repo</id>

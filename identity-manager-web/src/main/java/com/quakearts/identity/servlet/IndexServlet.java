@@ -19,16 +19,24 @@ public class IndexServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) 
 			throws ServletException, IOException {
-		doPost(req, resp);
+		try {
+			doPost(req, resp);
+		} catch (IOException | ServletException e) {
+			log("Unable to process response", e);
+		}
 	}
 	
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) 
 			throws ServletException, IOException {
-		if(req.isUserInRole("IdentityAdmin")) {
-			resp.sendRedirect(req.getContextPath()+"/ui/identities.jsf");
-		} else {
-			resp.sendRedirect(req.getContextPath()+"/us/modify.jsf");
+		try {
+			if(req.isUserInRole("IdentityAdmin")) {
+				resp.sendRedirect(req.getContextPath()+"/ui/identities.jsf");
+			} else {
+				resp.sendRedirect(req.getContextPath()+"/us/modify.jsf");
+			}
+		} catch (IOException e) {
+			log("Unable to process response", e);
 		}
 	}
 }
