@@ -2,9 +2,6 @@ package com.quakearts.identity.auth;
 
 import java.io.IOException;
 import java.security.Principal;
-import java.security.acl.Group;
-import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -30,12 +27,13 @@ import com.quakearts.identity.model.UserLog;
 import com.quakearts.identity.model.UserRole;
 import com.quakearts.identity.util.IdentityConfig;
 import com.quakearts.webapp.orm.DataStoreFactory;
-import com.quakearts.webapp.security.auth.DirectoryRoles;
 import com.quakearts.webapp.security.auth.OtherPrincipal;
 import com.quakearts.webapp.security.auth.UserPrincipal;
+import com.quakearts.webapp.security.auth.util.AttemptChecker;
 import com.quakearts.webapp.security.util.HashPassword;
 
 public class IdentityLoginModule implements LoginModule {
+	private static final String IDENTITY_MANAGER = "Identity-Manager";
 	private static final String IDENTITY_USER = "IdentityUser";
 	private Subject subject;
 	private CallbackHandler callbackHandler;
@@ -43,8 +41,13 @@ public class IdentityLoginModule implements LoginModule {
 	private Map sharedState;
 	private UserLog user;
 	private boolean loginOk;
-	private String roleGroupName;
 	private String[] defaultroles;
+	
+	static {
+		int maxAttempts = Integer.parseInt(IdentityConfig.getIdentityProperties().getProperty("max.login.attempts", "4"));
+		int lockoutTime = Integer.parseInt(IdentityConfig.getIdentityProperties().getProperty("lockout.time", "360000"));
+		AttemptChecker.createChecker(IDENTITY_MANAGER, maxAttempts, lockoutTime);
+	}
 	
 	@SuppressWarnings("rawtypes")
 	@Override
@@ -54,17 +57,13 @@ public class IdentityLoginModule implements LoginModule {
 		this.sharedState = sharedState;
 		this.subject = subject;
 		
-        String defaultroles_str = (String) options.get("default.roles");
-        roleGroupName =  (String) options.get("roles.group.name");
-		if(defaultroles_str != null){
-        	defaultroles = defaultroles_str.split(";");
+        String defaultrolesString = (String) options.get("default.roles");
+		if(defaultrolesString != null){
+        	defaultroles = defaultrolesString.split(";");
         	for(int i=0;i<defaultroles.length;i++)
         		defaultroles[i] = defaultroles[i].trim();
         }
 		
-		if (roleGroupName == null)
-			roleGroupName = new String("Roles");
-
 	}
 
 	@SuppressWarnings("unchecked")
@@ -102,6 +101,11 @@ public class IdentityLoginModule implements LoginModule {
 				: name.getName();
 		password = pass.getPassword();
 		
+		AttemptChecker attemptChecker = AttemptChecker.getChecker(IDENTITY_MANAGER);
+		if(attemptChecker.isLocked(username)){
+			throw new LoginException("User profile has been locked");
+		}
+
 		String hashPassword = new HashPassword(new String(password), 
 				IdentityConfig.getAlgorithm(), 
 				IdentityConfig.getIterations(),
@@ -115,23 +119,25 @@ public class IdentityLoginModule implements LoginModule {
 		
 		boolean localTran = false;
 		try {
-			if(localTran=(tran.getStatus() == Status.STATUS_NO_TRANSACTION)){
+			localTran=(tran.getStatus() == Status.STATUS_NO_TRANSACTION);
+			if(localTran){
 				tran.begin();
 			}
-		} catch (SystemException e) {
-			throw new LoginException("Cannot start transaction");
-		} catch (NotSupportedException e) {
+		} catch (SystemException | NotSupportedException e) {
 			throw new LoginException("Cannot start transaction");
 		}
 			
-		try{
+		try {
+			attemptChecker.incrementAttempts(username);
 			Optional<UserLog> users = DataStoreFactory.getInstance().getDataStore().find(UserLog.class)
 					.filterBy("username").withAValueEqualTo(username)
 					.filterBy("password").withAValueEqualTo(hashPassword)
 					.thenGetFirst();
 			
-			if((loginOk = users.isPresent())){
+			loginOk = users.isPresent();
+			if(loginOk){
 				user = users.get();
+				attemptChecker.reset(username);
 			}
 		} finally {
 			if(localTran)
@@ -154,55 +160,33 @@ public class IdentityLoginModule implements LoginModule {
 		return context;
 	}
 
-	@SuppressWarnings("rawtypes")
 	@Override
 	public boolean commit() throws LoginException {
 		Set<Principal> principalset = subject.getPrincipals();
-		Group rolesgrp=null;
-		for (Iterator i = principalset.iterator(); i.hasNext();) {
-			Object obj = i.next();
-			if (obj instanceof Group && ((Group) obj).getName().equals(roleGroupName)) {
-				rolesgrp = (Group) obj;
-				break;
-			}
-		}
-		
-		if(rolesgrp==null){
-			rolesgrp = new DirectoryRoles(roleGroupName);
-			principalset.add(rolesgrp);
-		}
 
-		rolesgrp.addMember(new OtherPrincipal(IDENTITY_USER));
-		rolesgrp.addMember(new UserPrincipal(user.getUsername()));
+		principalset.add(new OtherPrincipal(IDENTITY_USER));
+		principalset.add(new UserPrincipal(user.getUsername()));
 		
 		for(UserRole role:user.getUserRoles()){
 			OtherPrincipal principal = new OtherPrincipal(role.getRoleName(),
 					role.getRoleName());
-			rolesgrp.addMember(principal);
+			principalset.add(principal);
 		}
 		
 		if(defaultroles != null)
 			for(String defaultRole:defaultroles){
 				OtherPrincipal principal = new OtherPrincipal(defaultRole,
 						defaultRole);
-				rolesgrp.addMember(principal);			
+				principalset.add(principal);			
 			}
-		
-		Enumeration<? extends Principal> members = rolesgrp.members();
-		while (members.hasMoreElements()) {
-			Principal type = members.nextElement();
-			principalset.add(type);				
-		}
-		
+				
 		user = null;
 		return loginOk;
 	}
 
 	@Override
 	public boolean abort() throws LoginException {
-		loginOk=false;
-		user=null;
-		return true;
+		return logout();
 	}
 
 	@Override
